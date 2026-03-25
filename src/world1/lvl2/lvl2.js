@@ -1,0 +1,227 @@
+// Level 2: Python Variables
+import * as initialization from '../../initialization.js';
+
+// Level configuration
+const CURRENT_LEVEL = 2;
+const CURRENT_WORLD = 1;
+
+// Get student ID
+let studentId = sessionStorage.getItem('username');
+if (!studentId) {
+    studentId = localStorage.getItem('studentId') || 'Student_' + Math.random().toString(36).substr(2, 9);
+}
+localStorage.setItem('studentId', studentId);
+
+// Global variables
+let pyodide = null;
+let pyodideReady = false;
+let workspace = null;
+const blocklyArea = document.getElementById('blocklyArea');
+const blocklyDiv = document.getElementById('blocklyDiv');
+
+// Define toolbox with Variables category
+const toolboxLevel2 = {
+    kind: 'categoryToolbox',
+    contents: [
+        {
+            kind: 'category',
+            name: '📦 Variables',
+            colour: '#5CA699',
+            contents: [
+                { kind: 'block', type: 'variables_set' },
+                { kind: 'block', type: 'variables_get' }
+            ]
+        },
+        {
+            kind: 'category',
+            name: '🔤 Strings',
+            colour: '#A65C7A',
+            contents: [
+                { kind: 'block', type: 'text' },
+                { kind: 'block', type: 'text_print' }
+            ]
+        }
+    ]
+};
+
+// Initialize Blockly
+function initBlockly() {
+    try {
+        workspace = Blockly.inject(blocklyDiv, {
+            toolbox: toolboxLevel2,
+            trashcan: true,
+            scrollbars: true,
+            zoom: { controls: true, wheel: true }
+        });
+        console.log('Blockly initialized for Level 2');
+        return true;
+    } catch (error) {
+        console.error('Blockly error:', error);
+        return false;
+    }
+}
+
+// Save score to leaderboard
+async function saveScoreToLeaderboard(levelId, score) {
+    try {
+        const response = await fetch('../../../Quiz-project/save_score.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                student_id: studentId,
+                stage_id: levelId,
+                score: score
+            })
+        });
+        const result = await response.json();
+        if (result.success) {
+            console.log('Score saved! Rank:', result.rank);
+            return result;
+        }
+        return null;
+    } catch (error) {
+        console.error('Error saving score:', error);
+        return null;
+    }
+}
+
+// Run code
+async function runCode() {
+    const outputDiv = document.getElementById('output');
+    const runButton = document.getElementById('runButton');
+    const checkDiv = document.getElementById('check');
+    
+    if (!workspace) {
+        outputDiv.innerHTML = 'Blockly workspace not initialized.';
+        return;
+    }
+    
+    if (!pyodideReady || !pyodide) {
+        outputDiv.innerHTML = '⏳ Python interpreter is loading. Please wait...';
+        return;
+    }
+    
+    try {
+        runButton.disabled = true;
+        runButton.textContent = 'Running...';
+        
+        // Generate Python code
+        const code = Blockly.Python.workspaceToCode(workspace);
+        outputDiv.innerHTML = '<strong>Generated Python Code:</strong>\n' + code + '\n\n<strong>Output:</strong>\n';
+        
+        if (!code.trim()) {
+            outputDiv.innerHTML += 'No code to run. Please add blocks to your workspace.';
+            return;
+        }
+        
+        // Setup Python to capture output
+        const setupCode = `
+        import sys
+        from io import StringIO
+        stdout_capture = StringIO()
+        sys.stdout = stdout_capture
+        `;
+        
+        await pyodide.runPythonAsync(setupCode);
+        await pyodide.runPythonAsync(code);
+        
+        const pythonOutputCode = await pyodide.runPythonAsync(`
+        result = stdout_capture.getvalue()
+        sys.stdout = sys.__stdout__
+        result
+        `);
+        
+        // Display output
+        if (pythonOutputCode) {
+            outputDiv.innerHTML += pythonOutputCode;
+        } else {
+            outputDiv.innerHTML += 'Code executed successfully (no output)';
+        }
+        
+        // Check answer - Should print "Hello, Python!"
+        const expectedOutput = "Hello, Python!";
+        const actualOutput = String(pythonOutputCode).trim();
+        
+        if (actualOutput === expectedOutput) {
+            // CORRECT!
+            const result = await saveScoreToLeaderboard(CURRENT_LEVEL, 100);
+            
+            if (result && result.success) {
+                checkDiv.innerHTML = `
+                    <div class="success-message">
+                        ✅ Correct! Great job with variables!<br>
+                        Score: 100 points<br>
+                        Rank: #${result.rank}<br>
+                        🎉 Level 2 Complete!
+                    </div>
+                `;
+            } else {
+                checkDiv.innerHTML = `
+                    <div class="success-message">
+                        ✅ Correct! Great job with variables!<br>
+                        Score: 100 points<br>
+                        🎉 Level 2 Complete!
+                    </div>
+                `;
+            }
+            
+            // Mark level as completed
+            localStorage.setItem('level2_completed', 'true');
+            document.getElementById('nextPage').style.display = 'block';
+            
+        } else {
+            // INCORRECT
+            checkDiv.innerHTML = `
+                <div class="error-message">
+                    ❌ Not quite right!<br>
+                    Expected: "${expectedOutput}"<br>
+                    Got: "${actualOutput}"<br>
+                    <small>💡 Hint: Create a variable called "message" with the value "Hello, Python!" and print it.</small>
+                </div>
+            `;
+        }
+        
+    } catch (error) {
+        outputDiv.innerHTML += '\nError: ' + error.message;
+        checkDiv.innerHTML = `<div class="error-message">Error: ${error.message}</div>`;
+    } finally {
+        runButton.disabled = false;
+        runButton.textContent = 'Run Code';
+    }
+}
+
+// Initialize
+window.addEventListener('DOMContentLoaded', () => {
+    initBlockly();
+    setTimeout(() => {
+        initialization.resizeElement(blocklyDiv, blocklyArea, workspace);
+    }, 100);
+});
+
+window.addEventListener('load', async () => {
+    const loadingDiv = document.getElementById('loading');
+    loadingDiv.innerHTML = '🔄 Loading Python interpreter...';
+    
+    try {
+        pyodide = await loadPyodide();
+        pyodideReady = true;
+        loadingDiv.innerHTML = '✅ Python interpreter ready!';
+        setTimeout(() => {
+            loadingDiv.innerHTML = '';
+        }, 2000);
+    } catch (error) {
+        loadingDiv.innerHTML = '❌ Failed to load Python interpreter. Please refresh.';
+        console.error(error);
+    }
+});
+
+window.addEventListener('resize', () => {
+    if (workspace) {
+        initialization.resizeElement(blocklyDiv, blocklyArea, workspace);
+    }
+});
+
+document.getElementById('runButton').addEventListener('click', runCode);
+document.getElementById('leaderboardBtn').addEventListener('click', () => {
+    window.location.href = '/CODING-WITH-CATS-MAIN/Quiz-project/leaderboard.html?world=1&level=2';
+});

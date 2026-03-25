@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+    <script src="https://unpkg.com/blockly/python_compressed.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+    <link rel="stylesheet" href="../../main.css">
+    <style>
+        #blocklyDiv {
+            height: 500px;
+            width: 100%;
+            border: 2px solid #ccc;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        #blocklyArea {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            margin: 10px 0;
+        }
+        .challenge-container {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 20px;
+            border-left: 4px solid #ff9800;
+        }
+        .challenge-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #ff9800;
+        }
+        .challenge-description {
+            color: #666;
+            line-height: 1.5;
+        }
+        .example-box {
+            background: #e8e8e8;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: monospace;
+            border-left: 3px solid #ff9800;
+        }
+        .button-group {
+            margin: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+        #runButton {
+            background: #4CAF50;
+            color: white;
+        }
+        #runButton:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        #leaderboardBtn {
+            background: #2196F3;
+            color: white;
+        }
+        #leaderboardBtn:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+        }
+        #nextPage {
+            margin: 20px;
+            display: none;
+        }
+        #nextPage a {
+            padding: 10px 20px;
+            background: #ff9800;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        #nextPage a:hover {
+            background: #e68900;
+            transform: translateY(-2px);
+        }
+        #output {
+            background: #f4f4f4;
+            padding: 10px;
+            margin: 20px;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success-message {
+            color: green;
+            padding: 10px;
+            background: #e8f5e9;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        .error-message {
+            color: red;
+            padding: 10px;
+            background: #ffebee;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        #loading {
+            margin: 10px 20px;
+            padding: 10px;
+        }
+        .hint-box {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            border-left: 3px solid #ff9800;
+            font-size: 14px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔥 World 3 - Level 14: Inheritance 🔥</h1>
+    
+    <div class="challenge-container">
+        <div class="challenge-title">📝 Challenge: Inheritance</div>
+        <div class="challenge-description">
+            Learn how to create child classes that inherit from parent classes!
+            <br><br>
+            <strong>Task:</strong>
+            <ol>
+                <li>Create a parent class called "Animal" with a method "speak" that prints "Animal sound"</li>
+                <li>Create a child class called "Cat" that inherits from Animal</li>
+                <li>Override the speak method in Cat to print "Meow!"</li>
+                <li>Create a Cat object and call the speak method</li>
+            </ol>
+            <div class="example-box">
+                <strong>💡 Expected Output:</strong><br>
+                Meow!
+            </div>
+            <div class="hint-box">
+                💡 <strong>Hint:</strong> Use the inheritance block to create Cat(Animal)!
+            </div>
+        </div>
+    </div>
+    
+    <div id="blocklyArea">
+        <div id="blocklyDiv"></div>
+    </div>
+    
+    <div class="button-group">
+        <button id="runButton">▶ Run Code</button>
+        <button id="leaderboardBtn" onclick="window.location.href='../../../Quiz-project/leaderboard.html?world=3&level=14'">🏆 View Leaderboard</button>
+    </div>
+    
+    <div id="loading"></div>
+    <div id="output">💡 Output will appear here after running your code...</div>
+    <div id="check"></div>
+    <div id="nextPage"><a href="../lvl5/lvl5.html">Next Level →</a></div>
+    
+    <script src="lvl4.js" type="module"></script>
+</body>
+</html>

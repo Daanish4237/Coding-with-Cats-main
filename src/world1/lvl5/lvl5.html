@@ -1,0 +1,249 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+    <script src="https://unpkg.com/blockly/python_compressed.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+    <link rel="stylesheet" href="../../main.css">
+    <style>
+        #blocklyDiv {
+            height: 400px;
+            width: 100%;
+            border: 2px solid #ff9800;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 10px;
+        }
+        #blocklyArea {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            margin: 10px 0;
+        }
+        
+        .boss-fight-container {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 20px;
+            border-radius: 20px;
+            margin: 10px 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: glowPulse 2s infinite;
+        }
+        
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 152, 0, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(255, 152, 0, 0.6); }
+        }
+        
+        .boss-name {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: gold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .boss-image {
+            max-width: 150px;
+            border-radius: 50%;
+            border: 4px solid gold;
+            margin: 10px auto;
+            display: block;
+            animation: bossFloat 2s ease-in-out infinite;
+        }
+        
+        @keyframes bossFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .health-bar-container {
+            width: 80%;
+            margin: 15px auto;
+            background: #333;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .health-bar {
+            height: 35px;
+            background: linear-gradient(90deg, #ff0000, #ff6666);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .boss-message {
+            margin-top: 15px;
+            font-size: 1.1em;
+            color: #ff9800;
+            font-style: italic;
+        }
+        
+        .boss-question {
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: left;
+        }
+        
+        .challenge-container {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 20px;
+            border-left: 4px solid #ff9800;
+        }
+        
+        .button-group {
+            margin: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        #runButton {
+            background: linear-gradient(135deg, #ff9800, #ff5722);
+            color: white;
+        }
+        
+        #runButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.4);
+        }
+        
+        #leaderboardBtn {
+            background: #2196F3;
+            color: white;
+        }
+        
+        #nextPage {
+            margin: 20px;
+            display: none;
+        }
+        
+        #nextPage a {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: bold;
+        }
+        
+        #output {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            margin: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .success-message {
+            color: green;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid green;
+            font-weight: bold;
+        }
+        
+        .error-message {
+            color: red;
+            padding: 15px;
+            background: #ffebee;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid red;
+        }
+        
+        .hint-box {
+            background: #fff3cd;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #856404;
+        }
+        
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #ff9800, #ff5722);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2em;
+        }
+        
+        #loading {
+            margin: 10px 20px;
+            padding: 10px;
+            color: #ff9800;
+        }
+    </style>
+</head>
+<body>
+    <h1>👑 World 1 - Level 5: BOSS FIGHT! 👑</h1>
+    
+    <div id="boss-container" class="boss-fight-container">
+        <div class="boss-name">🐱 THE CODE CAT 🐱</div>
+        <img class="boss-image" src="/CODING-WITH-CATS-MAIN/assets/Angry%20dog.jpg" alt="Code Cat Boss" onerror="this.src='https://via.placeholder.com/150x150?text=Code+Cat'">
+        <div class="health-bar-container">
+            <div class="health-bar" id="bossHealthBar" style="width: 100%">3 / 3 Lives</div>
+        </div>
+        <div class="boss-message" id="bossMessage">Answer 3 questions correctly to defeat me!</div>
+        <div class="boss-question" id="bossQuestion">
+            <strong>⚔️ Challenge 1 of 3:</strong><br>
+            Loading questions...
+        </div>
+    </div>
+    
+    <div class="challenge-container">
+        <div class="challenge-title">⚔️ BOSS CHALLENGE: Defeat the Code Cat! ⚔️</div>
+        <div class="challenge-description">
+            The Code Cat tests your knowledge from all of World 1!<br>
+            Answer 3 questions correctly to win. Each correct answer removes one life.<br>
+            Use blocks from any category to solve each challenge!
+        </div>
+    </div>
+    
+    <div id="blocklyArea">
+        <div id="blocklyDiv"></div>
+    </div>
+    
+    <div class="button-group">
+        <button id="runButton">⚔️ ATTACK! Run Code ⚔️</button>
+        <button id="leaderboardBtn">🏆 View Leaderboard</button>
+    </div>
+    
+    <div id="loading"></div>
+    <div id="output">⚔️ Output will appear here after your attack... ⚔️</div>
+    <div id="check"></div>
+    <div id="nextPage"><a href="../../world2/lvl1/lvl1.html">Next World →</a></div>
+    
+    <script src="lvl5.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Quest Leaderboard</title>
+    <style>
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .world-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transform: scale(1.05);
+        }
+        .level-selector {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .level-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .level-btn {
+            padding: 10px 20px;
+            font-size: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            background: white;
+            transition: all 0.3s;
+        }
+        .level-btn.active {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+        #leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        #leaderboard-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
+        #leaderboard-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .top-rank {
+            background-color: #fff3cd;
+            font-weight: bold;
+        }
+        .navigation {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .back-btn, .refresh-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .back-btn { background: #6c757d; color: white; }
+        .refresh-btn { background: #28a745; color: white; }
+        .loading, .error, .empty { text-align: center; padding: 40px; color: #666; }
+        .error { color: #dc3545; }
+        .current-selection { text-align: center; margin: 20px 0; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏆 Code Quest Leaderboard</h1>
+        
+        <div class="world-tabs">
+            <button class="tab-btn" data-world="1">🌍 World 1: Blocky Basics</button>
+            <button class="tab-btn" data-world="2">⚡ World 2: Advanced Logic</button>
+            <button class="tab-btn" data-world="3">🌟 World 3: Master Challenges</button>
+        </div>
+        
+        <div id="level-selector" class="level-selector">
+            <h3>Select Level:</h3>
+            <div id="level-buttons" class="level-buttons"></div>
+        </div>
+        
+        <div id="current-selection" class="current-selection"></div>
+        
+        <div id="leaderboard-container">
+            <table id="leaderboard-table">
+                <thead>
+                    <tr><th>Rank</th><th>Student ID</th><th>Score</th><th>Level</th><th>Completed On</th></tr>
+                </thead>
+                <tbody id="leaderboard-body"><tr><td colspan="5" class="loading">Select a world and level to view leaderboard</td></tr></tbody>
+            </table>
+        </div>
+        
+        <div class="navigation">
+            <button onclick="goBackToGame()" class="back-btn">← Back to Game</button>
+            <button onclick="refreshLeaderboard()" class="refresh-btn">🔄 Refresh</button>
+        </div>
+    </div>
+
+    <script>
+        let currentWorld = 1;
+        let currentLevel = null;
+        
+        const worldLevels = {
+            1: { name: "World 1: Blocky Basics", levels: [1, 2, 3, 4, 5] },
+            2: { name: "World 2: Advanced Logic", levels: [6, 7, 8, 9, 10] },
+            3: { name: "World 3: Master Challenges", levels: [11, 12, 13, 14, 15] }
+        };
+        
+        function getWorldFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const world = parseInt(params.get('world'));
+            return (world >= 1 && world <= 3) ? world : 1;
+        }
+        
+        function getLevelFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            const level = parseInt(params.get('level'));
+            const world = currentWorld;
+            if (level && worldLevels[world] && worldLevels[world].levels.includes(level)) {
+                return level;
+            }
+            return worldLevels[world].levels[0];
+        }
+        
+        function showLevelSelector(worldId) {
+            const levelButtons = document.getElementById('level-buttons');
+            const levels = worldLevels[worldId].levels;
+            levelButtons.innerHTML = '';
+            levels.forEach(level => {
+                const btn = document.createElement('button');
+                btn.className = 'level-btn';
+                if (currentLevel === level) btn.classList.add('active');
+                const levelNumber = level - (worldId-1)*5;
+                btn.textContent = `Level ${levelNumber}`;
+                btn.onclick = () => {
+                    currentLevel = level;
+                    loadLeaderboard(worldId, level);
+                    updateURL(worldId, level);
+                };
+                levelButtons.appendChild(btn);
+            });
+        }
+        
+        function updateURL(worldId, levelId) {
+            const url = new URL(window.location);
+            url.searchParams.set('world', worldId);
+            url.searchParams.set('level', levelId);
+            window.history.pushState({}, '', url);
+        }
+        
+        async function loadLeaderboard(worldId, levelId) {
+            currentWorld = worldId;
+            currentLevel = levelId;
+            
+            const levelNumber = levelId - (worldId-1)*5;
+            document.getElementById('current-selection').innerHTML = `
+                <h2>${worldLevels[worldId].name}</h2>
+                <p>Level ${levelNumber} Leaderboard</p>
+            `;
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (parseInt(btn.dataset.world) === worldId) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            showLevelSelector(worldId);
+            document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="5" class="loading">Loading leaderboard...</td></tr>';
+            
+            try {
+                const response = await fetch(`/CODING-WITH-CATS-MAIN/Quiz-project/get_leaderboard.php?stage=${levelId}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                displayLeaderboard(data, levelId);
+            } catch (error) {
+                console.error('Error loading leaderboard:', error);
+                document.getElementById('leaderboard-body').innerHTML = `<tr><td colspan="5" class="error">Error loading leaderboard: ${error.message}</td></tr>`;
+            }
+        }
+        
+        function displayLeaderboard(scores, levelId) {
+            const tbody = document.getElementById('leaderboard-body');
+            const levelNumber = levelId - (currentWorld-1)*5;
+            
+            if (!scores || scores.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="empty">No scores yet for Level ${levelNumber}. Be the first! 🎮</td></tr>`;
+                return;
+            }
+            
+            tbody.innerHTML = scores.map((score, index) => {
+                const levelDisplay = score.stage_id - (currentWorld-1)*5;
+                return `
+                    <tr class="${index < 3 ? 'top-rank' : ''}">
+                        <td>${index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}</td>
+                        <td><strong>${escapeHtml(score.student_id)}</strong></td>
+                        <td>${score.score} pts</td>
+                        <td>Level ${levelDisplay}</td>
+                        <td>${formatDate(score.recordedAt)}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function refreshLeaderboard() {
+            loadLeaderboard(currentWorld, currentLevel);
+        }
+        
+        // FIXED: Back to Game function with correct path
+        function goBackToGame() {
+            const world = currentWorld;
+            const level = currentLevel;
+            const levelNumber = level - (world-1)*5;
+            
+            // For World 1, levels are in: src/world1/lvl1/lvl1.html, etc.
+          if (world === 1) {
+        window.location.href = `/CODING-WITH-CATS-MAIN/src/world1/lvl${levelNumber}/lvl${levelNumber}.html`;
+    } else if (world === 2) {
+        window.location.href = `/CODING-WITH-CATS-MAIN/src/world2/lvl${levelNumber}/lvl${levelNumber}.html`;
+    } else {
+        window.location.href = `/CODING-WITH-CATS-MAIN/src/world3/lvl${levelNumber}/lvl${levelNumber}.html`;
+    }
+}
+        
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const worldId = parseInt(btn.dataset.world);
+                const firstLevel = worldLevels[worldId].levels[0];
+                currentWorld = worldId;
+                currentLevel = firstLevel;
+                loadLeaderboard(worldId, firstLevel);
+                updateURL(worldId, firstLevel);
+            });
+        });
+        
+        window.addEventListener('popstate', () => {
+            const world = getWorldFromURL();
+            const level = getLevelFromURL();
+            currentWorld = world;
+            currentLevel = level;
+            loadLeaderboard(world, level);
+        });
+        
+        const initialWorld = getWorldFromURL();
+        currentWorld = initialWorld;
+        currentLevel = getLevelFromURL();
+        loadLeaderboard(currentWorld, currentLevel);
+    </script>
+</body>
+</html>
