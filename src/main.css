@@ -1,0 +1,47 @@
+body {
+    background-image: url('/assets/B1013-2.png');
+    background-size: cover;
+}
+
+#blocklyDiv {
+    position: absolute;  /* ADD THIS - allows overlay positioning */
+}
+
+#blocklyArea {
+    height: 400px;  /* ADD: Define height for the area */
+    width: 100%;    /* ADD: Define width for the area */
+}
+
+#question {
+    width: 50%;
+}
+
+#runButton {
+    margin: 10px 0;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: blue;
+    color: white;
+}
+
+#runButton:hover {
+    background-color: aqua;
+}
+
+#output {
+    border: 1px solid #ccc;
+    font-family: monospace;
+    white-space: pre-wrap;
+    width: 50%;
+}
+
+#loading {
+    display: none;
+    font-style: italic;
+    color: #ccc;
+}
+
+#nextPage {
+    color: black;
+}

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+    :root {
+      --bg-from:      #7b6fcf;
+      --bg-to:        #a78fe8;
+      --accent:       #7ec8f5;
+      --accent-dark:  #5aaee0;
+      --card-bg:      rgba(255, 255, 255, 0.88);
+      --input-bg:     rgba(235, 242, 255, 0.75);
+      --input-border: #c5d8f7;
+      --input-focus:  #88b8f0;
+      --text-dark:    #3d3580;
+      --text-mid:     #7873b5;
+      --text-light:   #a9a5d0;
+      --sparkle:      #ffffff;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Nunito', 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(174, 160, 255, 0.55) 0%, transparent 55%),
+        radial-gradient(ellipse at 80% 70%, rgba(126, 200, 245, 0.40) 0%, transparent 55%),
+        linear-gradient(145deg, #6c5fcf 0%, #8b7be8 40%, #a78fe8 70%, #b8a0f0 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(2px 2px at 12%  18%, rgba(255,255,255,0.70), transparent),
+        radial-gradient(2px 2px at 78%  12%, rgba(255,255,255,0.55), transparent),
+        radial-gradient(1.5px 1.5px at 55% 75%, rgba(255,255,255,0.50), transparent),
+        radial-gradient(1px 1px at 30%  85%, rgba(255,255,255,0.40), transparent),
+        radial-gradient(2px 2px at 90%  55%, rgba(255,255,255,0.45), transparent),
+        radial-gradient(1px 1px at 5%   60%, rgba(255,255,255,0.35), transparent);
+      pointer-events: none;
+      animation: twinkle 5s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0%   { opacity: .6; }
+      100% { opacity: 1; }
+    }
+
+    .auth-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(24px) saturate(160%);
+      border-radius: 32px;
+      padding: 52px 44px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow:
+        0 8px 0 rgba(126,200,245,0.35),
+        0 24px 56px rgba(90, 70, 180, 0.28),
+        0 0 0 1.5px rgba(255,255,255,0.55);
+      position: relative;
+      z-index: 1;
+      animation: popIn .55s cubic-bezier(.34,1.56,.64,1) both;
+    }
+
+    .auth-card::before {
+      content: '🐾';
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 36px;
+      filter: drop-shadow(0 4px 8px rgba(90,70,180,.35));
+      animation: pawBounce 3s ease-in-out infinite;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(.88) translateY(20px); }
+      to   { opacity: 1; transform: scale(1)  translateY(0); }
+    }
+
+    @keyframes pawBounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(-6px); }
+    }
+
+    .auth-title {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--text-dark);
+      text-align: center;
+      margin-top: 18px;
+      margin-bottom: 6px;
+      letter-spacing: -.3px;
+    }
+
+    .auth-subtitle {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-mid);
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 13.5px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      animation: slideDown .25s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .alert-success {
+      background: #ddf4e8;
+      color: #1a6640;
+      border: 1.5px solid #9de6bf;
+    }
+
+    .alert-danger {
+      background: #fde8ef;
+      color: #8b1c3a;
+      border: 1.5px solid #f7aac5;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-mid);
+      margin-bottom: 7px;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      width: 100%;
+      padding: 13px 18px;
+      border: 2px solid var(--input-border);
+      border-radius: 16px;
+      font-size: 15px;
+      font-family: inherit;
+      font-weight: 600;
+      color: var(--text-dark);
+      background: var(--input-bg);
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--input-focus);
+      background: rgba(255,255,255,0.92);
+      box-shadow:
+        0 0 0 4px rgba(136,184,240,.22),
+        0 4px 14px rgba(126,200,245,.18);
+      transform: translateY(-2px);
+    }
+
+    input::placeholder {
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .toggle-pw {
+      position: absolute;
+      right: 13px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 17px;
+      padding: 4px;
+      line-height: 1;
+      color: var(--text-light);
+      transition: color .2s, transform .2s;
+    }
+
+    .toggle-pw:hover {
+      color: var(--accent-dark);
+      transform: scale(1.15);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #88c8f5 0%, #6aaee8 40%, #7b8fe8 100%);
+      color: #fff;
+      border: none;
+      border-radius: 18px;
+      font-size: 15.5px;
+      font-family: inherit;
+      font-weight: 800;
+      letter-spacing: .5px;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow:
+        0 5px 0 rgba(90,140,220,.40),
+        0 10px 24px rgba(100,150,235,.30);
+      transition: transform .2s, box-shadow .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+      transform: translateX(-100%);
+      transition: transform .55s;
+    }
+
+    .btn:hover::after { transform: translateX(100%); }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow:
+        0 7px 0 rgba(90,140,220,.40),
+        0 16px 32px rgba(100,150,235,.38);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+      box-shadow:
+        0 2px 0 rgba(90,140,220,.40),
+        0 6px 14px rgba(100,150,235,.25);
+    }
+
+    .auth-switch {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-mid);
+    }
+
+    .auth-switch a {
+      color: var(--accent-dark);
+      font-weight: 800;
+      text-decoration: none;
+      transition: color .2s;
+    }
+
+    .auth-switch a:hover {
+      color: var(--text-dark);
+      text-decoration: underline;
+    }
+
+    @media (max-width: 520px) {
+      .auth-card { padding: 44px 24px 36px; }
+      .auth-title { font-size: 22px; }
+    }
+
+    .paw-print { position:fixed; pointer-events:none; z-index:0; opacity:0; transform-origin:center; }
+    .paw-print.stamp { animation:pawStamp 0.45s cubic-bezier(.22,1,.36,1) forwards; }
+    @keyframes pawStamp {
+      0%   { opacity:0;    transform:scale(1.6) rotate(var(--r)); }
+      35%  { opacity:0.92; transform:scale(0.85) rotate(var(--r)); }
+      60%  { opacity:0.88; transform:scale(1.05) rotate(var(--r)); }
+      100% { opacity:var(--fo); transform:scale(1) rotate(var(--r)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-card">
+    <h1 class="auth-title">Create account</h1>
+    <p class="auth-subtitle">Get started for free</p>
+
+    <div id="alert-box" style="display:none;"></div>
+
+    <form id="register-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" placeholder="Choose a username" required autocomplete="username">
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="Enter your email" required autocomplete="email">
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <input id="password" name="password" type="password" placeholder="At least 6 characters" required autocomplete="new-password">
+          <button type="button" class="toggle-pw" onclick="togglePassword('password')" aria-label="Toggle password visibility">👁️</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <div class="input-wrap">
+          <input id="confirm_password" name="confirm_password" type="password" placeholder="Repeat your password" required autocomplete="new-password">
+          <button type="button" class="toggle-pw" onclick="togglePassword('confirm_password')" aria-label="Toggle password visibility">👁️</button>
+        </div>
+      </div>
+
+      <button type="submit" class="btn">Create Account</button>
+    </form>
+
+    <p class="auth-switch">Already have an account? <a href="login.html">Sign in</a></p>
+  </div>
+
+  <script>
+    function togglePassword(id) {
+      const input = document.getElementById(id);
+      const btn   = input.nextElementSibling;
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+      } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+      }
+    }
+
+    document.getElementById('register-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const email    = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirm  = document.getElementById('confirm_password').value;
+      const alertBox = document.getElementById('alert-box');
+
+      alertBox.style.display = 'none';
+      alertBox.className = 'alert';
+
+      if (password !== confirm) {
+        alertBox.textContent = 'Passwords do not match.';
+        alertBox.className = 'alert alert-danger';
+        alertBox.style.display = 'block';
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password }),
+        });
+
+        if (res.status === 201) {
+          alertBox.textContent = 'Account created! You can now log in.';
+          alertBox.className = 'alert alert-success';
+          alertBox.style.display = 'block';
+          document.getElementById('register-form').reset();
+        } else {
+          const data = await res.json();
+          alertBox.textContent = data.error || 'Registration failed. Please try again.';
+          alertBox.className = 'alert alert-danger';
+          alertBox.style.display = 'block';
+        }
+      } catch (err) {
+        alertBox.textContent = 'Network error. Please try again.';
+        alertBox.className = 'alert alert-danger';
+        alertBox.style.display = 'block';
+      }
+    });
+
+    // Tiled paw print wallpaper across the whole background
+    const PAW_COLORS = [
+      'rgba(101,55,28,OP)',
+      'rgba(120,75,45,OP)',
+      'rgba(155,100,60,OP)',
+      'rgba(85,50,25,OP)',
+      'rgba(140,90,50,OP)',
+    ];
+
+    function makePawSVG(colorIdx, opacity, flip) {
+      const col = PAW_COLORS[colorIdx % PAW_COLORS.length].replace(/OP/g, opacity);
+      const mir = flip ? 'scale(-1,1) translate(-80,0)' : '';
+      return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 90" width="55" height="63">
+        <g transform="${mir}">
+          <path d="M40,78 C22,78 18,66 18,58 C18,47 25,40 40,40 C55,40 62,47 62,58 C62,66 58,78 40,78 Z" fill="${col}"/>
+          <ellipse cx="11" cy="33" rx="10" ry="12" fill="${col}"/>
+          <ellipse cx="69" cy="33" rx="10" ry="12" fill="${col}"/>
+          <ellipse cx="30" cy="20" rx="9"  ry="11" fill="${col}"/>
+          <ellipse cx="50" cy="20" rx="9"  ry="11" fill="${col}"/>
+        </g>
+      </svg>`;
+    }
+
+    function spawnPawWallpaper() {
+      const cols   = Math.ceil(window.innerWidth  / 100) + 1;
+      const rows   = Math.ceil(window.innerHeight / 110) + 1;
+      let idx = 0;
+
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const el = document.createElement('div');
+          el.className = 'paw-print stamp';
+
+          // offset every other row for staggered look
+          const offsetX = (row % 2 === 0) ? 0 : 50;
+          const x = col * 100 + offsetX;
+          const y = row * 110;
+
+          const rotation = (Math.random() * 60) - 30;
+          const opacity  = 0.55 + Math.random() * 0.35;
+          const colorIdx = (row * cols + col) % PAW_COLORS.length;
+          const flip     = Math.random() > 0.5;
+          const delay    = (row * cols + col) * 35;
+
+          el.style.cssText = `left:${x}px; top:${y}px; --r:${rotation}deg; --fo:${opacity}; opacity:0; animation-delay:${delay}ms;`;
+          el.innerHTML = makePawSVG(colorIdx, opacity, flip);
+          document.body.appendChild(el);
+
+          setTimeout(() => {
+            el.style.opacity = '0';
+            requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('stamp')));
+          }, delay);
+
+          idx++;
+        }
+      }
+    }
+
+    spawnPawWallpaper();
+  </script>
+</body>
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop - Coding with Cats</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+    :root {
+      --bg-from:      #7b6fcf;
+      --bg-to:        #a78fe8;
+      --accent:       #7ec8f5;
+      --accent-dark:  #5aaee0;
+      --card-bg:      rgba(255, 255, 255, 0.95);
+      --input-bg:     rgba(235, 242, 255, 0.75);
+      --input-border: #c5d8f7;
+      --input-focus:  #88b8f0;
+      --text-dark:    #3d3580;
+      --text-mid:     #7873b5;
+      --text-light:   #a9a5d0;
+      --success:      #4CAF50;
+      --danger:       #f44336;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Nunito', 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(145deg, #6c5fcf 0%, #8b7be8 40%, #a78fe8 70%, #b8a0f0 100%);
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 24px 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 8px 24px rgba(90, 70, 180, 0.25);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header h1 {
+      font-size: 28px;
+      color: var(--text-dark);
+      font-weight: 900;
+    }
+
+    .points-badge {
+      background: linear-gradient(135deg, #88c8f5 0%, #7b8fe8 100%);
+      color: white;
+      padding: 8px 18px;
+      border-radius: 50px;
+      font-size: 15px;
+      font-weight: 800;
+      box-shadow: 0 4px 12px rgba(100,150,235,.30);
+      white-space: nowrap;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    /* Buttons */
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-secondary {
+      background: #e0e0e0;
+      color: var(--text-dark);
+    }
+
+    .btn-secondary:hover {
+      background: #d0d0d0;
+      transform: translateY(-1px);
+    }
+
+    .btn-buy {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #88c8f5 0%, #6aaee8 40%, #7b8fe8 100%);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 14px;
+      box-shadow: 0 4px 0 rgba(90,140,220,.35), 0 8px 20px rgba(100,150,235,.25);
+      transition: transform .2s, box-shadow .2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-buy::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+      transform: translateX(-100%);
+      transition: transform .55s;
+    }
+
+    .btn-buy:hover::after { transform: translateX(100%); }
+
+    .btn-buy:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 rgba(90,140,220,.35), 0 14px 28px rgba(100,150,235,.35);
+    }
+
+    .btn-buy:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 0 rgba(90,140,220,.35), 0 4px 10px rgba(100,150,235,.20);
+    }
+
+    .btn-buy:disabled {
+      background: #c0c0c0;
+      box-shadow: none;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Alert */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      animation: slideDown .25s ease-out;
+    }
+
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .alert-danger {
+      background: #fde8ef;
+      color: #8b1c3a;
+      border: 1.5px solid #f7aac5;
+    }
+
+    /* Items grid */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .item-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 6px 20px rgba(90, 70, 180, 0.18);
+      display: flex;
+      flex-direction: column;
+      transition: transform .2s, box-shadow .2s;
+      animation: fadeInUp .4s ease-out both;
+    }
+
+    .item-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(90, 70, 180, 0.28);
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .item-icon {
+      font-size: 40px;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    .item-name {
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+
+    .item-type-badge {
+      display: inline-block;
+      background: rgba(126, 200, 245, 0.2);
+      color: var(--accent-dark);
+      border: 1.5px solid rgba(126, 200, 245, 0.5);
+      border-radius: 50px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .item-description {
+      font-size: 13.5px;
+      color: var(--text-mid);
+      font-weight: 600;
+      line-height: 1.5;
+      flex: 1;
+      margin-bottom: 14px;
+    }
+
+    .item-price {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .item-price span {
+      font-size: 13px;
+      color: var(--text-mid);
+      font-weight: 600;
+    }
+
+    .item-msg {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      animation: slideDown .2s ease-out;
+    }
+
+    .item-msg-error {
+      background: #fde8ef;
+      color: #8b1c3a;
+      border: 1.5px solid #f7aac5;
+    }
+
+    .item-msg-success {
+      background: #ddf4e8;
+      color: #1a6640;
+      border: 1.5px solid #9de6bf;
+    }
+
+    /* Loading / empty states */
+    .loading, .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-mid);
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .loading-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(90, 70, 180, 0.18);
+    }
+
+    @media (max-width: 600px) {
+      .header { flex-direction: column; align-items: flex-start; }
+      .items-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-left">
+        <h1>🛍️ Shop</h1>
+        <div class="points-badge" id="points-display">⭐ — pts</div>
+      </div>
+      <div class="header-actions">
+        <a href="/index.html" class="btn btn-secondary">← Back to Home</a>
+      </div>
+    </div>
+
+    <div id="global-alert" style="display:none;"></div>
+
+    <div id="items-container">
+      <div class="loading-card">
+        <div class="loading">Loading items...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentPoints = 0;
+
+    // Type → emoji mapping
+    const TYPE_ICONS = {
+      skin:       '🎨',
+      hat:        '🎩',
+      accessory:  '💎',
+      background: '🖼️',
+      effect:     '✨',
+      pet:        '🐱',
+    };
+
+    function getIcon(type) {
+      return TYPE_ICONS[(type || '').toLowerCase()] || '🎁';
+    }
+
+    async function init() {
+      // Auth check — redirect to login if not authenticated
+      try {
+        const res = await fetch('/api/auth/check');
+        const data = await res.json();
+
+        if (!data.authenticated) {
+          window.location.href = '/login.html';
+          return;
+        }
+
+        currentPoints = data.totalPoints ?? 0;
+        updatePointsDisplay(currentPoints);
+      } catch (err) {
+        window.location.href = '/login.html';
+        return;
+      }
+
+      // Load shop items
+      await loadItems();
+    }
+
+    function updatePointsDisplay(pts) {
+      document.getElementById('points-display').textContent = `⭐ ${pts} pts`;
+    }
+
+    async function loadItems() {
+      try {
+        const res = await fetch('/api/shop/items');
+        if (!res.ok) throw new Error('Failed to load items');
+        const items = await res.json();
+        renderItems(items);
+      } catch (err) {
+        document.getElementById('items-container').innerHTML =
+          '<div class="loading-card"><div class="empty-state">Failed to load shop items. Please try again.</div></div>';
+      }
+    }
+
+    function renderItems(items) {
+      const container = document.getElementById('items-container');
+
+      if (!items || items.length === 0) {
+        container.innerHTML =
+          '<div class="loading-card"><div class="empty-state">No items available in the shop right now.</div></div>';
+        return;
+      }
+
+      const grid = document.createElement('div');
+      grid.className = 'items-grid';
+
+      items.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.style.animationDelay = `${idx * 60}ms`;
+        card.dataset.itemId = item.item_id;
+
+        card.innerHTML = `
+          <div class="item-icon">${getIcon(item.type)}</div>
+          <div class="item-name">${escHtml(item.name)}</div>
+          <div class="item-type-badge">${escHtml(item.type || 'item')}</div>
+          <div class="item-description">${escHtml(item.description || '')}</div>
+          <div class="item-price">⭐ ${item.price} <span>points</span></div>
+          <button class="btn-buy" onclick="buyItem('${item.item_id}', ${item.price}, this)">Buy</button>
+          <div class="item-msg" style="display:none;"></div>
+        `;
+
+        grid.appendChild(card);
+      });
+
+      container.innerHTML = '';
+      container.appendChild(grid);
+    }
+
+    async function buyItem(itemId, price, btn) {
+      const card = btn.closest('.item-card');
+      const msgEl = card.querySelector('.item-msg');
+
+      // Clear previous message
+      msgEl.style.display = 'none';
+      msgEl.className = 'item-msg';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/shop/buy', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ item_id: itemId }),
+        });
+
+        if (res.status === 401) {
+          window.location.href = '/login.html';
+          return;
+        }
+
+        if (res.status === 402) {
+          msgEl.textContent = 'Not enough points';
+          msgEl.className = 'item-msg item-msg-error';
+          msgEl.style.display = 'block';
+          btn.disabled = false;
+          return;
+        }
+
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          msgEl.textContent = data.error || 'Purchase failed. Please try again.';
+          msgEl.className = 'item-msg item-msg-error';
+          msgEl.style.display = 'block';
+          btn.disabled = false;
+          return;
+        }
+
+        const data = await res.json();
+        currentPoints = data.remainingPoints;
+        updatePointsDisplay(currentPoints);
+
+        msgEl.textContent = '✅ Purchased!';
+        msgEl.className = 'item-msg item-msg-success';
+        msgEl.style.display = 'block';
+
+        // Keep button disabled after successful purchase
+        btn.textContent = 'Owned';
+        btn.disabled = true;
+      } catch (err) {
+        msgEl.textContent = 'Network error. Please try again.';
+        msgEl.className = 'item-msg item-msg-error';
+        msgEl.style.display = 'block';
+        btn.disabled = false;
+      }
+    }
+
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    window.addEventListener('load', init);
+  </script>
+</body>
+</html>
