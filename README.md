@@ -1,17 +1,72 @@
 # 🐱 Coding with Cats
 
-An educational Python coding game built with Phaser 3 and Blockly, deployed serverlessly on Vercel with a Neon PostgreSQL backend.
+An interactive educational game that teaches Python programming through fun, game-like challenges. Players progress through 3 worlds and 15 levels, writing Python code using a visual block-based editor (Blockly) that runs real Python in the browser via Pyodide.
 
-Players learn Python by solving coding challenges across 3 worlds and 15 levels, earning points, competing on leaderboards, and unlocking boss fights.
+🌐 **Live Demo**: [coding-with-cats-main.vercel.app](https://coding-with-cats-main.vercel.app)
+
+---
+
+## What is this?
+
+Coding with Cats is a browser-based coding game designed for beginners learning Python. Instead of typing code directly, players drag and drop visual blocks to build programs — making it approachable for students with no prior coding experience.
+
+Each level presents a challenge. Solve it correctly and you earn points, climb the leaderboard, and unlock the next level. Complete all levels in a world to face the boss fight.
+
+---
+
+## How to Play
+
+1. **Register** an account at `/register.html`
+2. **Log in** at `/login.html`
+3. You land on the **world map** — pick a level to start
+4. Drag blocks from the toolbox into the workspace to build your Python program
+5. Click **Run Code** to execute it
+6. If your output matches the expected answer, you pass the level and earn points
+7. Your score is saved to the **leaderboard** — try to beat your personal best for a streak bonus
+
+---
+
+## Game Structure
+
+| World | Levels | Topics Covered |
+|-------|--------|----------------|
+| World 1 | 1–5 | Variables, printing, data types, input |
+| World 2 | 6–10 | Conditionals, while loops, for loops, lists |
+| World 3 | 11–15 | Dictionaries, functions, classes, inheritance |
+
+Level 5, 10, and 15 are **boss fights** — harder challenges that unlock after completing the preceding levels.
+
+### Scoring System
+
+- Base score: 100 points per level
+- Time bonus: up to +300 points for fast completions (1 point per second under 5 minutes)
+- Streak multiplier: 1.5× if you beat your personal best 3 times in a row on the same level
+
+---
+
+## Features
+
+- Visual block-based Python editor (Blockly) with a dark game-style theme
+- Real Python execution in the browser (Pyodide / WebAssembly — no server needed for code)
+- User accounts with JWT authentication
+- Global leaderboard per level
+- Item shop — spend earned points on cosmetic items
+- Admin panel for managing levels and viewing student progress
+- Background music and sound effects
+- Animated UI with streak bonus banners and score reveal overlays
 
 ---
 
 ## Tech Stack
 
-- **Frontend**: Phaser 3 (game hub), Blockly + Pyodide (in-level coding), plain HTML/CSS/JS
-- **Backend**: Node.js serverless functions on Vercel (`/api/*`)
-- **Database**: Neon PostgreSQL via `pg` driver with SSL
-- **Auth**: JWT stored in httpOnly cookies (`jsonwebtoken` + `bcryptjs`)
+| Layer | Technology |
+|-------|-----------|
+| Frontend | HTML, CSS, JavaScript, Phaser 3 (world map) |
+| Code Editor | Blockly (visual blocks) + Pyodide (Python WASM) |
+| Backend | Node.js serverless functions on Vercel |
+| Database | Neon PostgreSQL |
+| Auth | JWT in httpOnly cookies |
+| Hosting | Vercel (static + serverless) |
 
 ---
 
@@ -19,93 +74,97 @@ Players learn Python by solving coding challenges across 3 worlds and 15 levels,
 
 ```
 /
-├── index.html              # Main hub (Phaser 3 canvas)
+├── index.html              # Main hub (Phaser 3 world map)
 ├── login.html              # Login page
 ├── register.html           # Registration page
-├── admin.html              # Admin panel (stage management + reports)
+├── admin.html              # Admin panel
 ├── shop.html               # Item shop
+├── favicon.ico
 ├── vercel.json             # Vercel routing config
 ├── package.json
 ├── api/
-│   ├── _db.js              # Shared Neon DB pool
-│   ├── _auth.js            # JWT/cookie helpers
+│   ├── _db.js              # Neon DB connection pool
+│   ├── _auth.js            # JWT helpers
 │   ├── auth/               # register, login, check, logout
-│   ├── leaderboard/        # GET leaderboard, POST save score
+│   ├── leaderboard/        # GET scores, POST save score
 │   ├── admin/              # Stage CRUD + progress reports
 │   └── shop/               # Items list + purchase
 ├── src/
 │   ├── scenes/MainHub.js   # Phaser world map scene
+│   ├── blockly-theme.js    # Dark game-style Blockly theme
 │   ├── main.js             # Phaser game config
-│   └── world1–3/           # 15 levels (Blockly + Pyodide)
-├── assets/audio/           # Game audio (ogg)
-├── scripts/seed-admin.js   # One-time admin account seeder
-└── database/               # Reference SQL schema
+│   └── world1/ world2/ world3/   # 15 levels
+├── assets/
+│   └── audio/              # Game audio files
+├── scripts/
+│   └── seed-admin.js       # Seeds the admin account
+└── database/
+    └── neon_schema.sql     # PostgreSQL schema
 ```
 
 ---
 
-## Getting Started
+## Running Locally
 
 ### Prerequisites
 
-- Node.js + npm
-- A [Neon](https://neon.tech) PostgreSQL database
-- A [Vercel](https://vercel.com) account
+- Node.js 18+
+- A [Neon](https://neon.tech) PostgreSQL database (free tier works)
 
-### Local setup
+### Setup
 
 ```bash
+# Install dependencies
 npm install
-```
 
-Create a `.env` file in the root:
-
-```env
+# Create a .env file
 DATABASE_URL=your_neon_connection_string
-JWT_SECRET=your_random_256bit_secret
+JWT_SECRET=any_long_random_string
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=your_admin_password
-```
 
-Seed the admin account (run once after DB is provisioned):
+# Run the database schema (paste neon_schema.sql into Neon SQL editor)
 
-```bash
+# Seed the admin account
 node scripts/seed-admin.js
-```
 
-### Running tests
-
-```bash
-npx jest api/__tests__/properties/ --no-coverage --forceExit
+# Serve locally (any static file server works)
+npx serve .
 ```
 
 ---
 
-## Deployment (Vercel)
+## Deploying to Vercel
 
-1. Push to GitHub
-2. Import the repo in Vercel
-3. Add the environment variables (`DATABASE_URL`, `JWT_SECRET`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`)
+1. Push this repo to GitHub
+2. Import the project in [Vercel](https://vercel.com)
+3. Add environment variables in Vercel → Settings → Environment Variables:
+   - `DATABASE_URL`
+   - `JWT_SECRET`
+   - `ADMIN_USERNAME`
+   - `ADMIN_PASSWORD`
 4. Deploy — Vercel auto-detects the `api/` folder as serverless functions
 
 ---
 
-## Game Overview
+## Admin Panel
 
-| World | Levels | Theme |
-|-------|--------|-------|
-| World 1 | 1–5 | Blocky Basics (variables, types, input) |
-| World 2 | 6–10 | Advanced Logic (conditionals, loops, lists) |
-| World 3 | 11–15 | Master Challenges (dicts, functions, classes) |
+Visit `/admin.html` after logging in with admin credentials.
 
-Level 5, 10, and 15 are boss fights. Boss levels unlock after completing the preceding stage.
+The admin panel lets you:
+- View, add, edit, and delete game stages
+- View a progress report showing each student's completed levels and total points
 
-Players earn points based on score + time bonus. A 1.5× streak multiplier applies when beating your personal best 3 times in a row on the same stage.
+The admin account is seeded via `scripts/seed-admin.js` — self-registered accounts always get the `User` role.
 
 ---
 
-## Notes
+## Contributing
 
-- Audio files in `assets/audio/` are placeholders — replace with real game audio before launch
-- The `database/` folder contains the reference SQL schema; it is not deployed
-- `node_modules/`, `.env` are gitignored
+Pull requests are welcome. For major changes, open an issue first to discuss what you'd like to change.
+
+---
+
+## License
+
+MIT
