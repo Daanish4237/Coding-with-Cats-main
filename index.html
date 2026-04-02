@@ -71,6 +71,30 @@
         }
         .logout-btn:hover { opacity: 0.85; }
 
+        .shop-btn {
+            background: #ff9800;
+            color: white;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .shop-btn:hover { opacity: 0.85; }
+
+        .admin-btn {
+            background: #9c27b0;
+            color: white;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .admin-btn:hover { opacity: 0.85; }
+
         /* ── Phaser canvas container ── */
         #game-container {
             width: 100%;
@@ -159,6 +183,8 @@
 
         <div id="user-welcome" class="user-welcome" style="display: none;">
             <span>🐱 Welcome, <strong id="username-display"></strong>!</span>
+            <a href="/shop.html" class="shop-btn">🛍️ Shop</a>
+            <a href="/admin.html" id="admin-link" class="admin-btn" style="display:none;">⚙️ Admin</a>
             <button onclick="handleLogout()" class="logout-btn">🚪 Logout</button>
         </div>
 
@@ -196,6 +222,9 @@
                     userWelcome.style.display  = 'flex';
                     document.getElementById('username-display').textContent = data.username;
                     sessionStorage.setItem('username', data.username);
+                    if (data.role === 'Admin') {
+                        document.getElementById('admin-link').style.display = 'inline-block';
+                    }
                 } else {
                     authStatus.style.display  = 'flex';
                     userWelcome.style.display  = 'none';
