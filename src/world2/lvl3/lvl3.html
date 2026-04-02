@@ -74,5 +74,32 @@
     <div id="nextPage"><a href="../lvl4/lvl4.html">Next Level →</a></div>
     
     <script src="lvl3.js" type="module"></script>
+
+    <!-- Pyodide loading overlay -->
+    <style>
+        #pyodide-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 99999; color: white; font-family: sans-serif;
+        }
+        #pyodide-overlay .spinner {
+            width: 52px; height: 52px; border: 5px solid rgba(255,255,255,0.2);
+            border-top-color: #4CAF50; border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin-bottom: 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #pyodide-overlay p { font-size: 1.1rem; font-weight: 600; }
+    </style>
+    <div id="pyodide-overlay">
+        <div class="spinner"></div>
+        <p>?? Loading Python engine...</p>
+    </div>
+    <script>
+        // Remove overlay once Pyodide signals ready
+        window.__hidePyodideOverlay = function() {
+            const el = document.getElementById('pyodide-overlay');
+            if (el) { el.style.opacity = '0'; el.style.transition = 'opacity 0.4s'; setTimeout(() => el.remove(), 400); }
+        };
+    </script>
 </body>
 </html>

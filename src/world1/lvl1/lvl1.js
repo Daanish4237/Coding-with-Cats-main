@@ -35,7 +35,7 @@ function initBlockly() {
             toolbox: toolboxXml,
             trashcan: true,
             scrollbars: true,
-            zoom: { controls: true, wheel: true }
+            zoom: { controls: false, wheel: false }, move: { scrollbars: true, drag: true, wheel: false }
         });
         console.log('Blockly initialized');
         return true;
@@ -99,6 +99,13 @@ async function runCode() {
     
     try {
         runButton.disabled = true;
+        // Animate the blockly area on run
+        const blocklyEl = document.getElementById('blocklyArea') || document.getElementById('blocklyDiv');
+        if (blocklyEl) {
+            blocklyEl.style.transition = 'box-shadow 0.15s ease';
+            blocklyEl.style.boxShadow = '0 0 0 4px rgba(76,175,80,0.6), 0 0 24px rgba(76,175,80,0.3)';
+            setTimeout(() => { blocklyEl.style.boxShadow = ''; }, 600);
+        }
         runButton.textContent = 'Running...';
         
         // Generate Python code
@@ -201,6 +208,7 @@ window.addEventListener('load', async () => {
     try {
         pyodide = await loadPyodide();
         pyodideReady = true;
+        if (window.__hidePyodideOverlay) window.__hidePyodideOverlay();
         loadingDiv.innerHTML = '✅ Python interpreter ready!';
         setTimeout(() => {
             loadingDiv.innerHTML = '';

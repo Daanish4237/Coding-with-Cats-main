@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -133,10 +133,10 @@
     </style>
 </head>
 <body>
-    <h1>📦 World 1 - Level 2: Python Variables 📦</h1>
+    <h1>?? World 1 - Level 2: Python Variables ??</h1>
     
     <div class="challenge-container">
-        <div class="challenge-title">📝 Challenge: Variables</div>
+        <div class="challenge-title">?? Challenge: Variables</div>
         <div class="challenge-description">
             Learn how to store information using variables!
             <br><br>
@@ -147,11 +147,11 @@
                 <li>Print the variable using the print block</li>
             </ol>
             <div class="example-box">
-                <strong>💡 Expected Output:</strong><br>
+                <strong>?? Expected Output:</strong><br>
                 Hello, Python!
             </div>
             <div class="hint-box">
-                💡 <strong>Hint:</strong> Use the "set variable" block from the Variables category!<br>
+                ?? <strong>Hint:</strong> Use the "set variable" block from the Variables category!<br>
                 Then use the "print" block and drag the "get variable" block inside it.
             </div>
         </div>
@@ -162,15 +162,42 @@
     </div>
     
     <div class="button-group">
-        <button id="runButton">▶ Run Code</button>
-        <button onclick="window.location.href='/Quiz-project/leaderboard.html?world=1&level=2'">🏆 View Leaderboard</button>
+        <button id="runButton">? Run Code</button>
+        <button onclick="window.location.href='/Quiz-project/leaderboard.html?world=1&level=2'">?? View Leaderboard</button>
     </div>
 
     <div id="loading"></div>
-    <div id="output">💡 Output will appear here after running your code...</div>
+    <div id="output">?? Output will appear here after running your code...</div>
     <div id="check"></div>
-    <div id="nextPage"><a href="../lvl3/lvl3.html">Next Level →</a></div>
+    <div id="nextPage"><a href="../lvl3/lvl3.html">Next Level ?</a></div>
     
     <script src="lvl2.js" type="module"></script>
+
+    <!-- Pyodide loading overlay -->
+    <style>
+        #pyodide-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 99999; color: white; font-family: sans-serif;
+        }
+        #pyodide-overlay .spinner {
+            width: 52px; height: 52px; border: 5px solid rgba(255,255,255,0.2);
+            border-top-color: #4CAF50; border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin-bottom: 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #pyodide-overlay p { font-size: 1.1rem; font-weight: 600; }
+    </style>
+    <div id="pyodide-overlay">
+        <div class="spinner"></div>
+        <p>?? Loading Python engine...</p>
+    </div>
+    <script>
+        // Remove overlay once Pyodide signals ready
+        window.__hidePyodideOverlay = function() {
+            const el = document.getElementById('pyodide-overlay');
+            if (el) { el.style.opacity = '0'; el.style.transition = 'opacity 0.4s'; setTimeout(() => el.remove(), 400); }
+        };
+    </script>
 </body>
 </html>
