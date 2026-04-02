@@ -1,0 +1,34 @@
+{
+  "name": "coding-with-cats",
+  "version": "1.0.0",
+  "description": "How to sync the whole git:",
+  "main": "phaser.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IZG2H/Coding-with-Cats.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/IZG2H/Coding-with-Cats/issues"
+  },
+  "homepage": "https://github.com/IZG2H/Coding-with-Cats#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "blockly": "^12.5.1",
+    "cookie": "^0.7.2",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.3",
+    "phaser": "^3.90.0",
+    "pyodide": "^0.29.3"
+  },
+  "devDependencies": {
+    "fast-check": "^4.6.0",
+    "jest": "^30.3.0"
+  }
+}

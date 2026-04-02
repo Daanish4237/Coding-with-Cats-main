@@ -6,9 +6,7 @@
     <title>Coding with Cats</title>
     <link rel="stylesheet" href="./src/main.css">
     <style>
-        *,
-        *::before,
-        *::after {
+        *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -16,360 +14,271 @@
 
         html, body {
             width: 100%;
-            min-height: 100vh;
+            height: 100%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
         }
 
+        /* ── Header (plain HTML, outside Phaser canvas) ── */
         .header {
             background: rgba(255, 255, 255, 0.95);
-            padding: 20px 40px;
+            padding: 12px 40px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            gap: 10px;
+            position: relative;
+            z-index: 10;
         }
 
-        .logo h1 {
-            color: #667eea;
-            font-size: 28px;
-        }
+        .logo h1 { color: #667eea; font-size: 24px; }
+        .logo p   { color: #666; font-size: 13px; margin-top: 3px; }
 
-        .logo p {
-            color: #666;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        .auth-buttons {
-            display: flex;
-            gap: 15px;
-        }
+        .auth-buttons { display: flex; gap: 12px; align-items: center; }
 
         .login-btn, .register-btn {
-            padding: 8px 20px;
+            padding: 7px 18px;
             border-radius: 25px;
             font-weight: bold;
             text-decoration: none;
-            transition: all 0.3s;
+            transition: opacity 0.2s;
         }
-
-        .login-btn {
-            background: #2196F3;
-            color: white;
-        }
-
-        .register-btn {
-            background: #4CAF50;
-            color: white;
-        }
+        .login-btn    { background: #2196F3; color: white; }
+        .register-btn { background: #4CAF50; color: white; }
+        .login-btn:hover, .register-btn:hover { opacity: 0.85; }
 
         .user-welcome {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             background: #f0f0f0;
-            padding: 8px 20px;
+            padding: 7px 18px;
             border-radius: 25px;
         }
 
         .logout-btn {
             background: #f44336;
             color: white;
-            padding: 5px 15px;
+            padding: 5px 14px;
             border-radius: 20px;
-            text-decoration: none;
             font-size: 12px;
-        }
-
-        .hero {
-            text-align: center;
-            padding: 60px 20px;
-            color: white;
-        }
-
-        .hero h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-
-        .hero p {
-            font-size: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .world-container {
-            max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .world-card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .world-title {
-            font-size: 32px;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid;
-            display: inline-block;
-        }
-
-        .world-1 .world-title { color: #4CAF50; border-bottom-color: #4CAF50; }
-        .world-2 .world-title { color: #2196F3; border-bottom-color: #2196F3; }
-        .world-3 .world-title { color: #ff9800; border-bottom-color: #ff9800; }
-
-        .levels-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin-top: 25px;
-        }
-
-        .level-card {
-            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            transition: all 0.3s;
+            border: none;
             cursor: pointer;
-            text-decoration: none;
-            color: #333;
-            border: 2px solid transparent;
+        }
+        .logout-btn:hover { opacity: 0.85; }
+
+        /* ── Phaser canvas container ── */
+        #game-container {
+            width: 100%;
+            /* Fill remaining viewport height below the header */
+            height: calc(100vh - 60px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .level-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-
-        .level-number {
-            font-size: 36px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .level-name {
-            font-size: 14px;
-            color: #666;
-        }
-
-        .level-status {
-            margin-top: 10px;
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 20px;
-            display: inline-block;
-            background: #e8f5e9;
-            color: #4CAF50;
-        }
-
-        .level-card.boss-level {
-            background: linear-gradient(135deg, #ff9800 0%, #f44336 100%);
-            color: white;
-        }
-
-        .level-card.boss-level .level-name {
-            color: white;
-        }
-
-        .leaderboard-section {
-            text-align: center;
-            margin: 40px auto;
-        }
-
-        .leaderboard-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
-            color: white;
-            padding: 15px 40px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 50px;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .leaderboard-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-        }
-
-        .footer {
-            text-align: center;
-            padding: 30px;
-            background: rgba(0,0,0,0.1);
-            color: white;
-            margin-top: 40px;
+        #game-container canvas {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
         }
 
         @media (max-width: 768px) {
-            .header { flex-direction: column; text-align: center; gap: 15px; }
-            .hero h1 { font-size: 32px; }
-            .world-title { font-size: 24px; }
+            .header { flex-direction: column; text-align: center; }
+        }
+
+        /* ── Task 13.1: Level card animations ── */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Applied to HTML-rendered level cards (non-Phaser fallback / future use) */
+        .level-card {
+            animation: fadeInUp 0.5s ease both;
+        }
+
+        .level-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.55),
+                        0 0 0 3px rgba(102, 126, 234, 0.25);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* ── Task 13.1: Score counter overlay ── */
+        #score-reveal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+        }
+        #score-reveal-overlay.active {
+            display: flex;
+            animation: fadeInUp 0.4s ease;
+        }
+        #score-reveal-overlay .score-box {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid gold;
+            border-radius: 20px;
+            padding: 40px 60px;
+            text-align: center;
+            color: white;
+        }
+        #score-reveal-overlay .score-box h2 {
+            font-size: 2rem;
+            color: gold;
+            margin-bottom: 12px;
+        }
+        #score-reveal-overlay .score-number {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #4CAF50;
         }
     </style>
 </head>
 <body>
+
+    <!-- ── Plain HTML header (auth buttons, mute toggle) ── -->
     <div class="header">
         <div class="logo">
             <h1>🐱 Coding with Cats</h1>
             <p>Learn Python by playing! 🎮</p>
         </div>
+
         <div class="auth-buttons" id="auth-status">
-            <a href="./database/login.php" class="login-btn">🔐 Login</a>
-            <a href="./database/register.php" class="register-btn">📝 Register</a>
+            <a href="/login.html" class="login-btn">🔐 Login</a>
+            <a href="/register.html" class="register-btn">📝 Register</a>
         </div>
+
         <div id="user-welcome" class="user-welcome" style="display: none;">
             <span>🐱 Welcome, <strong id="username-display"></strong>!</span>
-            <a href="./database/logout.php" class="logout-btn">🚪 Logout</a>
-        </div>
-    </div>
-
-    <div class="hero">
-        <h1>🌟 Welcome to Code Quest! 🌟</h1>
-        <p>Join the Coding Cats on an epic journey to master Python programming!</p>
-    </div>
-
-    <!-- World 1 -->
-    <div class="world-container">
-        <div class="world-card world-1">
-            <h2 class="world-title">🌍 World 1: Blocky Basics</h2>
-            <div class="levels-grid">
-                <a href="./src/world1/lvl1/lvl1.html" class="level-card">
-                    <div class="level-number">1</div>
-                    <div class="level-name">Printing Text</div>
-                    <div class="level-status">📘 Beginner</div>
-                </a>
-                <a href="./src/world1/lvl2/lvl2.html" class="level-card">
-                    <div class="level-number">2</div>
-                    <div class="level-name">Python Variables</div>
-                    <div class="level-status">📘 Beginner</div>
-                </a>
-                <a href="./src/world1/lvl3/lvl3.html" class="level-card">
-                    <div class="level-number">3</div>
-                    <div class="level-name">Data Types</div>
-                    <div class="level-status">📘 Beginner</div>
-                </a>
-                <a href="./src/world1/lvl4/lvl4.html" class="level-card">
-                    <div class="level-number">4</div>
-                    <div class="level-name">Input Functions</div>
-                    <div class="level-status">📘 Beginner</div>
-                </a>
-                <a href="./src/world1/lvl5/lvl5.html" class="level-card boss-level">
-                    <div class="level-number">👑 5</div>
-                    <div class="level-name">Boss: Code Cat!</div>
-                    <div class="level-status">⚔️ Boss Battle</div>
-                </a>
-            </div>
+            <button onclick="handleLogout()" class="logout-btn">🚪 Logout</button>
         </div>
 
-        <!-- World 2 -->
-        <div class="world-card world-2">
-            <h2 class="world-title">⚡ World 2: Advanced Logic</h2>
-            <div class="levels-grid">
-                <a href="./src/world2/lvl1/lvl1.html" class="level-card">
-                    <div class="level-number">6</div>
-                    <div class="level-name">Conditional Statements</div>
-                    <div class="level-status">🚀 Intermediate</div>
-                </a>
-                <a href="./src/world2/lvl2/lvl2.html" class="level-card">
-                    <div class="level-number">7</div>
-                    <div class="level-name">While Loops</div>
-                    <div class="level-status">🚀 Intermediate</div>
-                </a>
-                <a href="./src/world2/lvl3/lvl3.html" class="level-card">
-                    <div class="level-number">8</div>
-                    <div class="level-name">For Loops</div>
-                    <div class="level-status">🚀 Intermediate</div>
-                </a>
-                <a href="./src/world2/lvl4/lvl4.html" class="level-card">
-                    <div class="level-number">9</div>
-                    <div class="level-name">Lists and Tuples</div>
-                    <div class="level-status">🚀 Advanced</div>
-                </a>
-                <a href="./src/world2/lvl5/lvl5.html" class="level-card boss-level">
-                    <div class="level-number">👑 10</div>
-                    <div class="level-name">Boss: Logic Master</div>
-                    <div class="level-status">🔒 Locked</div>
-                </a>
-            </div>
-        </div>
-
-        <!-- World 3 -->
-        <div class="world-card world-3">
-            <h2 class="world-title">🌟 World 3: Master Challenges</h2>
-            <div class="levels-grid">
-                <a href="./src/world3/lvl1/lvl1.html" class="level-card">
-                    <div class="level-number">11</div>
-                    <div class="level-name">Dictionaries & Sets</div>
-                    <div class="level-status">🔥 Advanced</div>
-                </a>
-                <a href="./src/world3/lvl2/lvl2.html" class="level-card">
-                    <div class="level-number">12</div>
-                    <div class="level-name">Functions</div>
-                    <div class="level-status">🔥 Advanced</div>
-                </a>
-                <a href="./src/world3/lvl3/lvl3.html" class="level-card">
-                    <div class="level-number">13</div>
-                    <div class="level-name">Classes & Objects</div>
-                    <div class="level-status">🔥 Advanced</div>
-                </a>
-                <a href="./src/world3/lvl4/lvl4.html" class="level-card">
-                    <div class="level-number">14</div>
-                    <div class="level-name">Inheritance</div>
-                    <div class="level-status">🔥 Advanced</div>
-                </a>
-                <a href="./src/world3/lvl5/lvl5.html" class="level-card boss-level">
-                    <div class="level-number">👑 15</div>
-                    <div class="level-name">Final Boss: Ultimate Challenge</div>
-                    <div class="level-status">🔒 Locked</div>
-                </a>
-            </div>
-        </div>
+        <!-- Mute toggle (persists cwc_muted in localStorage) -->
+        <button id="mute-btn" onclick="toggleMute()" title="Toggle music"
+                style="background:none;border:none;font-size:1.5rem;cursor:pointer;padding:4px 8px;">🔊</button>
     </div>
 
-    <div class="leaderboard-section">
-        <a href="./Quiz-project/leaderboard.html" class="leaderboard-btn">🏆 View Global Leaderboard 🏆</a>
-    </div>
+    <!-- ── Phaser mounts here ── -->
+    <div id="game-container"></div>
 
-    <div class="footer">
-        <p>🐱 Made with ❤️ for young coders | Learn Python through gamified adventures!</p>
+    <!-- Background music (also used by Phaser scene via this.sound) -->
+    <audio id="bg-music" loop src="assets/audio/bg_music.ogg"></audio>
+
+    <!-- Task 13.1: Score reveal overlay (triggered by level pages via postMessage or direct call) -->
+    <div id="score-reveal-overlay">
+        <div class="score-box">
+            <h2>🏆 Level Complete!</h2>
+            <div class="score-number" id="score-counter-display">0</div>
+            <p style="color:#aaa;margin-top:8px;">points</p>
+        </div>
     </div>
 
     <script>
+        // ── Header auth state ─────────────────────────────────────────────
         async function checkAuth() {
             try {
-                const baseUrl = window.location.origin + '/Coding-with-Cats-main';
-                const response = await fetch(`${baseUrl}/database/check-auth.php`);
-                const data = await response.json();
-                
-                const authStatus = document.getElementById('auth-status');
-                const userWelcome = document.getElementById('user-welcome');
-                
+                const res  = await fetch('/api/auth/check');
+                const data = await res.json();
+                const authStatus   = document.getElementById('auth-status');
+                const userWelcome  = document.getElementById('user-welcome');
+
                 if (data.authenticated) {
-                    authStatus.style.display = 'none';
-                    userWelcome.style.display = 'flex';
+                    authStatus.style.display  = 'none';
+                    userWelcome.style.display  = 'flex';
                     document.getElementById('username-display').textContent = data.username;
                     sessionStorage.setItem('username', data.username);
                 } else {
-                    authStatus.style.display = 'flex';
-                    userWelcome.style.display = 'none';
+                    authStatus.style.display  = 'flex';
+                    userWelcome.style.display  = 'none';
                 }
-            } catch (error) {
-                console.error('Auth check failed:', error);
+            } catch (err) {
+                console.error('Auth check failed:', err);
             }
         }
-        
+
+        async function handleLogout() {
+            try { await fetch('/api/auth/logout', { method: 'POST' }); } catch (_) {}
+            window.location.href = '/index.html';
+        }
+
         window.addEventListener('load', checkAuth);
+
+        // ── Mute toggle ───────────────────────────────────────────────────
+        const bgMusic = document.getElementById('bg-music');
+        let musicStarted = false;
+
+        function applyMuteState() {
+            const muted = localStorage.getItem('cwc_muted') === 'true';
+            bgMusic.muted = muted;
+            document.getElementById('mute-btn').textContent = muted ? '🔇' : '🔊';
+        }
+
+        function toggleMute() {
+            const nowMuted = !(localStorage.getItem('cwc_muted') === 'true');
+            localStorage.setItem('cwc_muted', String(nowMuted));
+            applyMuteState();
+            // Sync with Phaser sound manager if available
+            if (window.__phaserGame) {
+                const music = window.__phaserGame.sound.get('bg_music');
+                if (music) music.setMute(nowMuted);
+            }
+        }
+
+        function startMusic() {
+            if (musicStarted) return;
+            musicStarted = true;
+            applyMuteState();
+            bgMusic.play().catch(() => {});
+        }
+
+        applyMuteState();
+        document.addEventListener('click',   startMusic, { once: true });
+        document.addEventListener('keydown', startMusic, { once: true });
+
+        // ── Task 13.1: Animated score counter ────────────────────────────
+        /**
+         * showScoreReveal(finalScore)
+         * Counts up from 0 to finalScore over 1.5 s, then auto-dismisses.
+         * Can be called from level pages via: window.opener?.showScoreReveal(score)
+         * or triggered internally.
+         */
+        window.showScoreReveal = function(finalScore) {
+            const overlay = document.getElementById('score-reveal-overlay');
+            const display = document.getElementById('score-counter-display');
+            if (!overlay || !display) return;
+
+            overlay.classList.add('active');
+            const duration = 1500; // ms
+            const start = performance.now();
+
+            function tick(now) {
+                const elapsed = now - start;
+                const progress = Math.min(elapsed / duration, 1);
+                // Ease-out cubic
+                const eased = 1 - Math.pow(1 - progress, 3);
+                display.textContent = Math.round(eased * finalScore);
+                if (progress < 1) {
+                    requestAnimationFrame(tick);
+                } else {
+                    display.textContent = finalScore;
+                    setTimeout(() => overlay.classList.remove('active'), 2000);
+                }
+            }
+            requestAnimationFrame(tick);
+        };
     </script>
+
+    <!-- Phaser 3 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <!-- Main game entry point -->
     <script type="module" src="./src/main.js"></script>
 </body>
 </html>

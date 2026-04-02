@@ -24,6 +24,7 @@ let score = 0;
 
 const blocklyArea = document.getElementById('blocklyArea');
 const blocklyDiv = document.getElementById('blocklyDiv');
+const levelStartTime = Date.now();
 
 // Questions that test what they learned in World 1
 const bossQuestions = [
@@ -267,18 +268,21 @@ function bossDefeatedCelebration() {
 // Save score to leaderboard
 async function saveScoreToLeaderboard(levelId, score) {
     try {
-        const response = await fetch('../../../Quiz-project/save_score.php', {
+        const response = await fetch('/api/leaderboard/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                student_id: studentId,
                 stage_id: levelId,
-                score: score
+                base_score: score,
+                completion_time_ms: Date.now() - levelStartTime
             })
         });
         const result = await response.json();
         if (result.success) {
             console.log('Score saved! Rank:', result.rank);
+            if (result.bonus_applied) {
+                showStreakBanner();
+            }
             return result;
         }
         return null;
@@ -286,6 +290,13 @@ async function saveScoreToLeaderboard(levelId, score) {
         console.error('Error saving score:', error);
         return null;
     }
+}
+
+function showStreakBanner() {
+    const banner = document.getElementById('streak-banner');
+    if (!banner) return;
+    banner.classList.add('active');
+    setTimeout(() => banner.classList.remove('active'), 2500);
 }
 
 // Run code (attack the boss)
@@ -388,6 +399,8 @@ async function runCode() {
                 // BOSS DEFEATED!
                 bossDefeated = true;
                 const result = await saveScoreToLeaderboard(CURRENT_LEVEL, 100);
+                if (window.sfxVictory) window.sfxVictory.play().catch(() => {});
+                if (window.showScoreReveal) window.showScoreReveal(result?.final_score ?? 100);
                 
                 checkDiv.innerHTML = `
                     <div class="success-message">

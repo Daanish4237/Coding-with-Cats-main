@@ -18,8 +18,7 @@ let pyodideReady = false;
 let workspace = null;
 const blocklyArea = document.getElementById('blocklyArea');
 const blocklyDiv = document.getElementById('blocklyDiv');
-
-// ============ CUSTOM BLOCKS FOR LEVEL 3 ============
+const levelStartTime = Date.now();
 
 // Integer conversion block
 Blockly.Blocks['python_int_conversion'] = {
@@ -121,18 +120,21 @@ function initBlockly() {
 // Save score to leaderboard
 async function saveScoreToLeaderboard(levelId, score) {
     try {
-        const response = await fetch('../../../Quiz-project/save_score.php', {
+        const response = await fetch('/api/leaderboard/save', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                student_id: studentId,
                 stage_id: levelId,
-                score: score
+                base_score: score,
+                completion_time_ms: Date.now() - levelStartTime
             })
         });
         const result = await response.json();
         if (result.success) {
             console.log('Score saved! Rank:', result.rank);
+            if (result.bonus_applied) {
+                showStreakBanner();
+            }
             return result;
         }
         return null;
@@ -140,6 +142,15 @@ async function saveScoreToLeaderboard(levelId, score) {
         console.error('Error saving score:', error);
         return null;
     }
+}
+
+function showStreakBanner() {
+    const banner = document.createElement('div');
+    banner.id = 'streak-banner';
+    banner.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:9999;animation:bounceIn 0.5s ease;';
+    banner.innerHTML = '<div style="font-size:3rem;text-align:center;color:#fff;text-shadow:0 0 20px #ff6600;">🔥 Streak Bonus x1.5!</div>';
+    document.body.appendChild(banner);
+    setTimeout(() => banner.remove(), 2500);
 }
 
 // Run code

@@ -1,0 +1,7 @@
+{
+  "platformio-ide.autoOpenPlatformIOIniFile": false,
+  "platformio-ide.disablePIOHomeStartup": true,
+  "singular-blockly.theme": "light",
+  "liveServer.settings.port": 5501,
+  "kiroAgent.configureMCP": "Disabled"
+}

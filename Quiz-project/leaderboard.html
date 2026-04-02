@@ -99,6 +99,15 @@
         .loading, .error, .empty { text-align: center; padding: 40px; color: #666; }
         .error { color: #dc3545; }
         .current-selection { text-align: center; margin: 20px 0; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; color: white; }
+
+        /* Task 13.3: slide-in animation for leaderboard rows */
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(60px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+        .slide-in {
+            animation: slideInRight 0.4s ease both;
+        }
     </style>
 </head>
 <body>
@@ -121,7 +130,7 @@
         <div id="leaderboard-container">
             <table id="leaderboard-table">
                 <thead>
-                    <tr><th>Rank</th><th>Student ID</th><th>Score</th><th>Level</th><th>Completed On</th></tr>
+                    <tr><th>Rank</th><th>Username</th><th>Score</th><th>Level</th><th>Completed On</th></tr>
                 </thead>
                 <tbody id="leaderboard-body"><tr><td colspan="5" class="loading">Select a world and level to view leaderboard</td></tr></tbody>
             </table>
@@ -207,7 +216,7 @@
             document.getElementById('leaderboard-body').innerHTML = '<tr><td colspan="5" class="loading">Loading leaderboard...</td></tr>';
             
             try {
-                const response = await fetch(`/CODING-WITH-CATS-MAIN/Quiz-project/get_leaderboard.php?stage=${levelId}`);
+                const response = await fetch(`/api/leaderboard?stage=${levelId}`);
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -238,9 +247,9 @@
             tbody.innerHTML = scores.map((score, index) => {
                 const levelDisplay = score.stage_id - (currentWorld-1)*5;
                 return `
-                    <tr class="${index < 3 ? 'top-rank' : ''}">
+                    <tr class="${index < 3 ? 'top-rank' : ''} slide-in" style="animation-delay:${index * 0.07}s">
                         <td>${index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `#${index + 1}`}</td>
-                        <td><strong>${escapeHtml(score.student_id)}</strong></td>
+                        <td><strong>${escapeHtml(score.username || score.student_id)}</strong></td>
                         <td>${score.score} pts</td>
                         <td>Level ${levelDisplay}</td>
                         <td>${formatDate(score.recordedAt)}</td>
@@ -274,11 +283,11 @@
             
             // For World 1, levels are in: src/world1/lvl1/lvl1.html, etc.
           if (world === 1) {
-        window.location.href = `/CODING-WITH-CATS-MAIN/src/world1/lvl${levelNumber}/lvl${levelNumber}.html`;
+        window.location.href = `/src/world1/lvl${levelNumber}/lvl${levelNumber}.html`;
     } else if (world === 2) {
-        window.location.href = `/CODING-WITH-CATS-MAIN/src/world2/lvl${levelNumber}/lvl${levelNumber}.html`;
+        window.location.href = `/src/world2/lvl${levelNumber}/lvl${levelNumber}.html`;
     } else {
-        window.location.href = `/CODING-WITH-CATS-MAIN/src/world3/lvl${levelNumber}/lvl${levelNumber}.html`;
+        window.location.href = `/src/world3/lvl${levelNumber}/lvl${levelNumber}.html`;
     }
 }
         

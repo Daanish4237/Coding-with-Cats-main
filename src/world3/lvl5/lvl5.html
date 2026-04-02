@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+    <script src="https://unpkg.com/blockly/python_compressed.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js"></script>
+    <link rel="stylesheet" href="../../main.css">
+    <style>
+        #blocklyDiv {
+            height: 400px;
+            width: 100%;
+            border: 2px solid #e53935;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border-radius: 10px;
+        }
+        #blocklyArea {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            margin: 10px 0;
+        }
+
+        .boss-fight-container {
+            background: linear-gradient(135deg, #1a0000 0%, #2d0a0a 100%);
+            padding: 20px;
+            border-radius: 20px;
+            margin: 10px 20px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: glowPulse 2s infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(229, 57, 53, 0.3); }
+            50% { box-shadow: 0 0 35px rgba(229, 57, 53, 0.8); }
+        }
+
+        .boss-name {
+            font-size: 2em;
+            margin-bottom: 10px;
+            color: #ff8a65;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .boss-image {
+            max-width: 150px;
+            border-radius: 50%;
+            border: 4px solid #e53935;
+            margin: 10px auto;
+            display: block;
+            animation: bossFloat 2s ease-in-out infinite;
+        }
+
+        @keyframes bossFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .health-bar-container {
+            width: 80%;
+            margin: 15px auto;
+            background: #333;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .health-bar {
+            height: 35px;
+            background: linear-gradient(90deg, #b71c1c, #ef5350);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .boss-message {
+            margin-top: 15px;
+            font-size: 1.1em;
+            color: #ff8a65;
+            font-style: italic;
+        }
+
+        .boss-question {
+            background: rgba(0,0,0,0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        .challenge-container {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 20px;
+            border-left: 4px solid #e53935;
+        }
+
+        .button-group {
+            margin: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        #runButton {
+            background: linear-gradient(135deg, #e53935, #b71c1c);
+            color: white;
+        }
+
+        #runButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(183, 28, 28, 0.5);
+        }
+
+        #leaderboardBtn {
+            background: #2196F3;
+            color: white;
+        }
+
+        #nextPage {
+            margin: 20px;
+            display: none;
+        }
+
+        #nextPage a {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        #output {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            margin: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .success-message {
+            color: green;
+            padding: 15px;
+            background: #e8f5e9;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid green;
+            font-weight: bold;
+        }
+
+        .error-message {
+            color: red;
+            padding: 15px;
+            background: #ffebee;
+            border-radius: 8px;
+            margin-top: 10px;
+            border-left: 4px solid red;
+        }
+
+        .hint-box {
+            background: #fce4ec;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #880e4f;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #e53935, #ff8a65);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2em;
+        }
+
+        #loading {
+            margin: 10px 20px;
+            padding: 10px;
+            color: #e53935;
+        }
+
+        #streak-banner {
+            display: none;
+        }
+
+        #streak-banner.active {
+            display: flex;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.75);
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: bounceIn 0.5s ease;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); opacity: 1; }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <h1>🔥 World 3 - Level 15: ULTIMATE BOSS FIGHT! 🔥</h1>
+
+    <div id="boss-container" class="boss-fight-container">
+        <div class="boss-name">💀 THE ULTIMATE CHALLENGER 💀</div>
+        <img class="boss-image" src="/CODING-WITH-CATS-MAIN/assets/Angry%20dog.jpg" alt="Ultimate Challenger Boss" onerror="this.src='https://via.placeholder.com/150x150?text=Ultimate+Boss'">
+        <div class="health-bar-container">
+            <div class="health-bar" id="bossHealthBar" style="width: 100%">3 / 3 Lives</div>
+        </div>
+        <div class="boss-message" id="bossMessage">You dare challenge me? Prove your mastery of ALL worlds!</div>
+        <div class="boss-question" id="bossQuestion">
+            <strong>🔥 Challenge 1 of 3:</strong><br>
+            Loading questions...
+        </div>
+    </div>
+
+    <div class="challenge-container">
+        <div class="challenge-title">🔥 ULTIMATE CHALLENGE: Defeat the Final Boss! 🔥</div>
+        <div class="challenge-description">
+            The Ultimate Challenger tests everything you have learned across all 3 worlds!<br>
+            Answer 3 questions correctly to win. Each correct answer removes one life.<br>
+            Use classes, loops, conditionals, and all your skills to survive!
+        </div>
+    </div>
+
+    <div id="blocklyArea">
+        <div id="blocklyDiv"></div>
+    </div>
+
+    <div class="button-group">
+        <button id="runButton">🔥 ATTACK! Run Code 🔥</button>
+        <button id="leaderboardBtn">🏆 View Leaderboard</button>
+    </div>
+
+    <div id="loading"></div>
+    <div id="output">🔥 Output will appear here after your attack... 🔥</div>
+    <div id="check"></div>
+    <div id="nextPage"><a href="../../../index.html">🏠 Return to Hub</a></div>
+
+    <script src="lvl5.js" type="module"></script>
+
+    <!-- Task 13.4: level SFX -->
+    <script>
+        (function() {
+            const muted = localStorage.getItem('cwc_muted') === 'true';
+            const sfxStart = new Audio('../../../assets/audio/sfx_level_start.ogg');
+            sfxStart.muted = muted;
+            window.addEventListener('load', () => sfxStart.play().catch(() => {}));
+            window.sfxVictory = new Audio('../../../assets/audio/sfx_victory.ogg');
+            window.sfxVictory.muted = muted;
+        })();
+    </script>
+
+    <!-- Task 13.1: Animated score counter overlay -->
+    <style>
+        #score-reveal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.82);
+            align-items: center;
+            justify-content: center;
+            z-index: 9998;
+        }
+        #score-reveal-overlay.active { display: flex; animation: scoreRevealIn 0.4s ease; }
+        @keyframes scoreRevealIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        .score-reveal-box {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid gold;
+            border-radius: 20px;
+            padding: 40px 60px;
+            text-align: center;
+            color: white;
+        }
+        .score-reveal-box h2 { font-size: 2rem; color: gold; margin-bottom: 12px; }
+        .score-reveal-number { font-size: 4rem; font-weight: bold; color: #4CAF50; }
+    </style>
+    <div id="score-reveal-overlay">
+        <div class="score-reveal-box">
+            <h2>🏆 Level Complete!</h2>
+            <div class="score-reveal-number" id="score-counter-display">0</div>
+            <p style="color:#aaa;margin-top:8px;">points</p>
+        </div>
+    </div>
+    <script>
+        window.showScoreReveal = function(finalScore) {
+            const overlay = document.getElementById('score-reveal-overlay');
+            const display = document.getElementById('score-counter-display');
+            if (!overlay || !display) return;
+            overlay.classList.add('active');
+            const duration = 1500;
+            const start = performance.now();
+            function tick(now) {
+                const progress = Math.min((now - start) / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                display.textContent = Math.round(eased * finalScore);
+                if (progress < 1) { requestAnimationFrame(tick); }
+                else { display.textContent = finalScore; setTimeout(() => overlay.classList.remove('active'), 2000); }
+            }
+            requestAnimationFrame(tick);
+        };
+    </script>
+
+    <!-- Task 13.2: streak bonus banner -->
+    <div id="streak-banner">
+        <div style="font-size:3rem;text-align:center;color:#fff;text-shadow:0 0 20px #e53935;">🔥 Streak Bonus x1.5!</div>
+    </div>
+</body>
+</html>
