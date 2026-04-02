@@ -1,5 +1,6 @@
 // Level 3: Data Types
 import * as initialization from '../../initialization.js';
+import { createGameTheme } from '../../blockly-theme.js';
 
 // Level configuration
 const CURRENT_LEVEL = 3;
@@ -103,7 +104,9 @@ const toolboxLevel3 = {
 // Initialize Blockly
 function initBlockly() {
     try {
+        const gameTheme = createGameTheme();
         workspace = Blockly.inject(blocklyDiv, {
+            theme: gameTheme,
             toolbox: toolboxLevel3,
             trashcan: true,
             scrollbars: true,

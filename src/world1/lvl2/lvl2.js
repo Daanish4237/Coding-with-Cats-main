@@ -1,5 +1,6 @@
 // Level 2: Python Variables
 import * as initialization from '../../initialization.js';
+import { createGameTheme } from '../../blockly-theme.js';
 
 // Level configuration
 const CURRENT_LEVEL = 2;
@@ -48,7 +49,9 @@ const toolboxLevel2 = {
 // Initialize Blockly
 function initBlockly() {
     try {
+        const gameTheme = createGameTheme();
         workspace = Blockly.inject(blocklyDiv, {
+            theme: gameTheme,
             toolbox: toolboxLevel2,
             trashcan: true,
             scrollbars: true,

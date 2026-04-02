@@ -1,5 +1,6 @@
 // World 2, Level 3 (Level 8): For Loops
 import * as initialization from '../../initialization.js';
+import { createGameTheme } from '../../blockly-theme.js';
 
 // Level configuration
 const CURRENT_LEVEL = 8;
@@ -104,7 +105,9 @@ const toolboxLevel8 = {
 // Initialize Blockly
 function initBlockly() {
     try {
+        const gameTheme = createGameTheme();
         workspace = Blockly.inject(blocklyDiv, {
+            theme: gameTheme,
             toolbox: toolboxLevel8,
             trashcan: true,
             scrollbars: true,

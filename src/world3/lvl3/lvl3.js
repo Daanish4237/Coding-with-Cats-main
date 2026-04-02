@@ -1,5 +1,6 @@
 // World 3 - Level 13: OOP Part 1 - Classes and Objects
 import * as initialization from '../../initialization.js';
+import { createGameTheme } from '../../blockly-theme.js';
 
 // Level configuration
 const CURRENT_LEVEL = 13;
@@ -200,7 +201,9 @@ const toolboxLevel13 = {
 // Initialize Blockly
 function initBlockly() {
     try {
+        const gameTheme = createGameTheme();
         workspace = Blockly.inject(blocklyDiv, {
+            theme: gameTheme,
             toolbox: toolboxLevel13,
             trashcan: true,
             scrollbars: true,

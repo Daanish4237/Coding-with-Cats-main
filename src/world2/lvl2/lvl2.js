@@ -1,5 +1,6 @@
 // World 2, Level 2 (Level 7): While Loops
 import * as initialization from '../../initialization.js';
+import { createGameTheme } from '../../blockly-theme.js';
 
 // Level configuration
 const CURRENT_LEVEL = 7;
@@ -72,7 +73,9 @@ const toolboxLevel7 = {
 // Initialize Blockly
 function initBlockly() {
     try {
+        const gameTheme = createGameTheme();
         workspace = Blockly.inject(blocklyDiv, {
+            theme: gameTheme,
             toolbox: toolboxLevel7,
             trashcan: true,
             scrollbars: true,

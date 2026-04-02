@@ -1,5 +1,6 @@
 // World 2, Level 6: Conditional Statements (If/Else)
 import * as initialization from '../../initialization.js';
+import { createGameTheme } from '../../blockly-theme.js';
 
 // Level configuration
 const CURRENT_LEVEL = 6;
@@ -74,7 +75,9 @@ const toolboxLevel6 = {
 // Initialize Blockly
 function initBlockly() {
     try {
+        const gameTheme = createGameTheme();
         workspace = Blockly.inject(blocklyDiv, {
+            theme: gameTheme,
             toolbox: toolboxLevel6,
             trashcan: true,
             scrollbars: true,

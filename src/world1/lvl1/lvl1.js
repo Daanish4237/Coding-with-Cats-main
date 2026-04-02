@@ -1,5 +1,6 @@
 // Level 1: Printing Text
 import * as initialization from '../../initialization.js';
+import { createGameTheme } from '../../blockly-theme.js';
 
 // Level configuration
 const CURRENT_LEVEL = 1;
@@ -31,7 +32,9 @@ const toolboxXml = `
 // Initialize Blockly
 function initBlockly() {
     try {
+        const gameTheme = createGameTheme();
         workspace = Blockly.inject(blocklyDiv, {
+            theme: gameTheme,
             toolbox: toolboxXml,
             trashcan: true,
             scrollbars: true,

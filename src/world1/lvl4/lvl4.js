@@ -1,5 +1,6 @@
 // Level 4: Input Functions
 import * as initialization from '../../initialization.js';
+import { createGameTheme } from '../../blockly-theme.js';
 
 // Level configuration
 const CURRENT_LEVEL = 4;
@@ -101,7 +102,9 @@ const toolboxLevel4 = {
 // Initialize Blockly
 function initBlockly() {
     try {
+        const gameTheme = createGameTheme();
         workspace = Blockly.inject(blocklyDiv, {
+            theme: gameTheme,
             toolbox: toolboxLevel4,
             trashcan: true,
             scrollbars: true,

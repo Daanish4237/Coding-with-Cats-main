@@ -1,5 +1,6 @@
 // World 2, Level 4 (Level 9): Lists and Tuples
 import * as initialization from '../../initialization.js';
+import { createGameTheme } from '../../blockly-theme.js';
 
 // Level configuration
 const CURRENT_LEVEL = 9;
@@ -96,7 +97,9 @@ const toolboxLevel9 = {
 // Initialize Blockly
 function initBlockly() {
     try {
+        const gameTheme = createGameTheme();
         workspace = Blockly.inject(blocklyDiv, {
+            theme: gameTheme,
             toolbox: toolboxLevel9,
             trashcan: true,
             scrollbars: true,

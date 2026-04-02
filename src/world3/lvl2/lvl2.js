@@ -1,5 +1,6 @@
 // World 3 - Level 12: Functions
 import * as initialization from '../../initialization.js';
+import { createGameTheme } from '../../blockly-theme.js';
 
 // Level configuration
 const CURRENT_LEVEL = 12;
@@ -96,7 +97,9 @@ const toolboxLevel12 = {
 // Initialize Blockly
 function initBlockly() {
     try {
+        const gameTheme = createGameTheme();
         workspace = Blockly.inject(blocklyDiv, {
+            theme: gameTheme,
             toolbox: toolboxLevel12,
             trashcan: true,
             scrollbars: true,

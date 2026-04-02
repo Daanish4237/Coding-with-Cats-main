@@ -193,7 +193,9 @@ if (!Blockly.Blocks['python_int_conversion']) {
 // Initialize Blockly
 function initBlockly() {
     try {
+        const gameTheme = createGameTheme();
         workspace = Blockly.inject(blocklyDiv, {
+            theme: gameTheme,
             toolbox: toolboxLevel5,
             trashcan: true,
             scrollbars: true,

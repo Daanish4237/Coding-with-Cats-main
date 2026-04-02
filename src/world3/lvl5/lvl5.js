@@ -319,7 +319,9 @@ const toolboxLevel15 = {
 function initBlockly() {
     try {
         registerCustomBlocks();
+        const gameTheme = createGameTheme();
         workspace = Blockly.inject(blocklyDiv, {
+            theme: gameTheme,
             toolbox: toolboxLevel15,
             trashcan: true,
             scrollbars: true,
