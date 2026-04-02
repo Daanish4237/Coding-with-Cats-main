@@ -219,5 +219,5 @@ window.addEventListener('resize', () => {
 
 document.getElementById('runButton').addEventListener('click', runCode);
 document.getElementById('leaderboardBtn').addEventListener('click', () => {
-   window.location.href = '/CODING-WITH-CATS-MAIN/Quiz-project/leaderboard.html?world=1&level=1';
+   window.location.href = '../../../Quiz-project/leaderboard.html?world=1&level=1';
 });
