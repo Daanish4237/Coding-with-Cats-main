@@ -1,5 +1,6 @@
 // World 3 - Level 13: OOP Part 1 - Classes and Objects
 import * as initialization from '../../initialization.js';
+import { createGameTheme } from '../../blockly-theme.js';
 
 // Level configuration
 const CURRENT_LEVEL = 13;
@@ -200,11 +201,14 @@ const toolboxLevel13 = {
 // Initialize Blockly
 function initBlockly() {
     try {
+        const gameTheme = createGameTheme();
         workspace = Blockly.inject(blocklyDiv, {
+            theme: gameTheme,
             toolbox: toolboxLevel13,
             trashcan: true,
             scrollbars: true,
-            zoom: { controls: true, wheel: true }
+            zoom: { controls: false, wheel: false, startScale: 0.9 },
+            move: { scrollbars: { horizontal: true, vertical: true }, drag: true, wheel: false }
         });
         console.log('Blockly initialized for Level 13');
         return true;
@@ -268,6 +272,13 @@ async function runCode() {
     
     try {
         runButton.disabled = true;
+        // Animate the blockly area on run
+        const blocklyEl = document.getElementById('blocklyArea') || document.getElementById('blocklyDiv');
+        if (blocklyEl) {
+            blocklyEl.style.transition = 'box-shadow 0.15s ease';
+            blocklyEl.style.boxShadow = '0 0 0 4px rgba(76,175,80,0.6), 0 0 24px rgba(76,175,80,0.3)';
+            setTimeout(() => { blocklyEl.style.boxShadow = ''; }, 600);
+        }
         runButton.textContent = 'Running...';
         
         const code = Blockly.Python.workspaceToCode(workspace);
@@ -352,7 +363,7 @@ async function runCode() {
 window.addEventListener('DOMContentLoaded', () => {
     initBlockly();
     setTimeout(() => {
-        initialization.resizeElement(blocklyDiv, blocklyArea, workspace);
+        if (workspace) Blockly.svgResize(workspace);
     }, 100);
 });
 
@@ -363,6 +374,7 @@ window.addEventListener('load', async () => {
     try {
         pyodide = await loadPyodide();
         pyodideReady = true;
+        if (window.__hidePyodideOverlay) window.__hidePyodideOverlay();
         loadingDiv.innerHTML = '✅ Python interpreter ready!';
         setTimeout(() => {
             loadingDiv.innerHTML = '';
@@ -375,11 +387,11 @@ window.addEventListener('load', async () => {
 
 window.addEventListener('resize', () => {
     if (workspace) {
-        initialization.resizeElement(blocklyDiv, blocklyArea, workspace);
+        if (workspace) Blockly.svgResize(workspace);
     }
 });
 
-document.getElementById('runButton').addEventListener('click', runCode);
-document.getElementById('leaderboardBtn').addEventListener('click', () => {
+if (document.getElementById('runButton')) document.getElementById('runButton').addEventListener('click', runCode);
+if (document.getElementById('leaderboardBtn')) document.getElementById('leaderboardBtn').addEventListener('click', () => {
     window.location.href = '../../../Quiz-project/leaderboard.html?world=3&level=13';
 });

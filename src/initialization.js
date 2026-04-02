@@ -35,6 +35,7 @@ async function initPyodide(pyodideObject) {
         // await pyodide.loadPackage("micropip");
         
         pyodideObject.pyodideReady = true;
+        if (window.__hidePyodideOverlay) window.__hidePyodideOverlay();
         runButton.disabled = false;
         runButton.textContent = 'Run Python Code';
         loadingDiv.style.display = 'none';
@@ -58,6 +59,13 @@ async function runCode(pyodideObject, workspace, answerChecking) {
     
     try {
         runButton.disabled = true;
+        // Animate the blockly area on run
+        const blocklyEl = document.getElementById('blocklyArea') || document.getElementById('blocklyDiv');
+        if (blocklyEl) {
+            blocklyEl.style.transition = 'box-shadow 0.15s ease';
+            blocklyEl.style.boxShadow = '0 0 0 4px rgba(76,175,80,0.6), 0 0 24px rgba(76,175,80,0.3)';
+            setTimeout(() => { blocklyEl.style.boxShadow = ''; }, 600);
+        }
         runButton.textContent = 'Running...';
         
         // Generate Python code from the workspace
@@ -128,4 +136,4 @@ function startInit(blocklyDiv, blocklyArea, workspace, pyodideObject, answerChec
     });
 }
 
-export {startInit};
+export {startInit, resizeElement};

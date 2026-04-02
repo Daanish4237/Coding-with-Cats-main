@@ -17,6 +17,13 @@ export class MainHub extends Phaser.Scene {
     // ─── preload ────────────────────────────────────────────────────────────
 
     preload() {
+        // Silently swallow audio load errors (placeholder files may be empty)
+        this.load.on('loaderror', (file) => {
+            if (file.key === 'bg_music') {
+                console.warn('bg_music failed to load — audio disabled');
+            }
+        });
+
         // Background music (ogg with mp3 fallback)
         if (!this.cache.audio.exists('bg_music')) {
             this.load.audio('bg_music', [

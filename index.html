@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Coding with Cats</title>
     <link rel="stylesheet" href="./src/main.css">
@@ -69,6 +70,30 @@
             cursor: pointer;
         }
         .logout-btn:hover { opacity: 0.85; }
+
+        .shop-btn {
+            background: #ff9800;
+            color: white;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .shop-btn:hover { opacity: 0.85; }
+
+        .admin-btn {
+            background: #9c27b0;
+            color: white;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+        .admin-btn:hover { opacity: 0.85; }
 
         /* ── Phaser canvas container ── */
         #game-container {
@@ -158,6 +183,8 @@
 
         <div id="user-welcome" class="user-welcome" style="display: none;">
             <span>🐱 Welcome, <strong id="username-display"></strong>!</span>
+            <a href="/shop.html" class="shop-btn">🛍️ Shop</a>
+            <a href="/admin.html" id="admin-link" class="admin-btn" style="display:none;">⚙️ Admin</a>
             <button onclick="handleLogout()" class="logout-btn">🚪 Logout</button>
         </div>
 
@@ -169,8 +196,8 @@
     <!-- ── Phaser mounts here ── -->
     <div id="game-container"></div>
 
-    <!-- Background music (also used by Phaser scene via this.sound) -->
-    <audio id="bg-music" loop src="assets/audio/bg_music.ogg"></audio>
+    <!-- Background music — src set dynamically to avoid 416 on empty placeholder -->
+    <audio id="bg-music" loop></audio>
 
     <!-- Task 13.1: Score reveal overlay (triggered by level pages via postMessage or direct call) -->
     <div id="score-reveal-overlay">
@@ -195,6 +222,9 @@
                     userWelcome.style.display  = 'flex';
                     document.getElementById('username-display').textContent = data.username;
                     sessionStorage.setItem('username', data.username);
+                    if (data.role === 'Admin') {
+                        document.getElementById('admin-link').style.display = 'inline-block';
+                    }
                 } else {
                     authStatus.style.display  = 'flex';
                     userWelcome.style.display  = 'none';
@@ -236,8 +266,16 @@
             if (musicStarted) return;
             musicStarted = true;
             applyMuteState();
-            bgMusic.play().catch(() => {});
+            // Only attempt play if the audio element has a src (real file, not placeholder)
+            if (bgMusic.src && bgMusic.src !== window.location.href) {
+                bgMusic.play().catch(() => {});
+            }
         }
+
+        // Set src only after confirming the file exists (avoids 416 on empty placeholders)
+        fetch('assets/audio/bg_music.ogg', { method: 'HEAD' })
+            .then(r => { if (r.ok) bgMusic.src = 'assets/audio/bg_music.ogg'; })
+            .catch(() => {});
 
         applyMuteState();
         document.addEventListener('click',   startMusic, { once: true });
