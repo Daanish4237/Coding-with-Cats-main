@@ -353,6 +353,7 @@
       const password = document.getElementById('password').value;
       const confirm  = document.getElementById('confirm_password').value;
       const alertBox = document.getElementById('alert-box');
+      const btn = this.querySelector('button[type="submit"]');
 
       alertBox.style.display = 'none';
       alertBox.className = 'alert';
@@ -364,6 +365,9 @@
         return;
       }
 
+      btn.disabled = true;
+      btn.textContent = '⏳ Creating account…';
+
       try {
         const res = await fetch('/api/auth/register', {
           method: 'POST',
@@ -372,22 +376,31 @@
         });
 
         if (res.status === 201) {
+          btn.textContent = '✅ Done!';
           alertBox.textContent = 'Account created! You can now log in.';
           alertBox.className = 'alert alert-success';
           alertBox.style.display = 'block';
           document.getElementById('register-form').reset();
+          setTimeout(() => { btn.disabled = false; btn.textContent = 'Create Account'; }, 2000);
         } else {
           const data = await res.json();
           alertBox.textContent = data.error || 'Registration failed. Please try again.';
           alertBox.className = 'alert alert-danger';
           alertBox.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Create Account';
         }
       } catch (err) {
         alertBox.textContent = 'Network error. Please try again.';
         alertBox.className = 'alert alert-danger';
         alertBox.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
       }
     });
+
+    // Pre-warm the DB on page load
+    fetch('/api/auth/check').catch(() => {});
 
     // Tiled paw print wallpaper across the whole background
     const PAW_COLORS = [

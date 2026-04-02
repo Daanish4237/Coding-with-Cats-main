@@ -338,9 +338,14 @@
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
       const alertBox = document.getElementById('alert-box');
+      const btn = this.querySelector('button[type="submit"]');
 
       alertBox.style.display = 'none';
       alertBox.className = 'alert';
+
+      // Show loading state
+      btn.disabled = true;
+      btn.textContent = '⏳ Signing in…';
 
       try {
         const res = await fetch('/api/auth/login', {
@@ -350,19 +355,27 @@
         });
 
         if (res.ok) {
+          btn.textContent = '✅ Success!';
           window.location.href = '/index.html';
         } else {
           const data = await res.json();
           alertBox.textContent = data.error || 'Login failed. Please try again.';
           alertBox.className = 'alert alert-danger';
           alertBox.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Sign In';
         }
       } catch (err) {
         alertBox.textContent = 'Network error. Please try again.';
         alertBox.className = 'alert alert-danger';
         alertBox.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
       }
     });
+
+    // Pre-warm the DB on page load so it's awake when the user submits
+    fetch('/api/auth/check').catch(() => {});
 
     // Tiled paw print wallpaper
     const PAW_COLORS = [
