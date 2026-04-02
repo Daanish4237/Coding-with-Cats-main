@@ -367,7 +367,13 @@
         const response = await fetch('/api/auth/check');
         const data = await response.json();
         
-        if (!data.authenticated || data.role !== 'Admin') {
+        if (!data.authenticated) {
+          window.location.href = '/login.html';
+          return false;
+        }
+
+        if (data.role !== 'Admin') {
+          alert(`Access denied. Your role is: "${data.role}". Admin role required.\n\nUsername: ${data.username}`);
           window.location.href = '/index.html';
           return false;
         }

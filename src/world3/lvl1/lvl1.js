@@ -329,7 +329,7 @@ async function runCode() {
 window.addEventListener('DOMContentLoaded', () => {
     initBlockly();
     setTimeout(() => {
-        initialization.resizeElement(blocklyDiv, blocklyArea, workspace);
+        if (workspace) Blockly.svgResize(workspace);
     }, 100);
 });
 
@@ -353,7 +353,7 @@ window.addEventListener('load', async () => {
 
 window.addEventListener('resize', () => {
     if (workspace) {
-        initialization.resizeElement(blocklyDiv, blocklyArea, workspace);
+        if (workspace) Blockly.svgResize(workspace);
     }
 });
 
