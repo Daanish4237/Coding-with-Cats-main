@@ -197,7 +197,8 @@ function initBlockly() {
             toolbox: toolboxLevel5,
             trashcan: true,
             scrollbars: true,
-            zoom: { controls: false, wheel: false }, move: { scrollbars: true, drag: true, wheel: false }
+            zoom: { controls: false, wheel: false, startScale: 0.9 },
+            move: { scrollbars: { horizontal: true, vertical: true }, drag: true, wheel: false }
         });
         console.log('Blockly initialized for Boss Level!');
         return true;

@@ -35,7 +35,8 @@ function initBlockly() {
             toolbox: toolboxXml,
             trashcan: true,
             scrollbars: true,
-            zoom: { controls: false, wheel: false }, move: { scrollbars: true, drag: true, wheel: false }
+            zoom: { controls: false, wheel: false, startScale: 0.9 },
+            move: { scrollbars: { horizontal: true, vertical: true }, drag: true, wheel: false }
         });
         console.log('Blockly initialized');
         return true;
