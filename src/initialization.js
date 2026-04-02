@@ -136,4 +136,4 @@ function startInit(blocklyDiv, blocklyArea, workspace, pyodideObject, answerChec
     });
 }
 
-export {startInit};
+export {startInit, resizeElement};

@@ -287,7 +287,7 @@ window.addEventListener('resize', () => {
     }
 });
 
-document.getElementById('runButton').addEventListener('click', runCode);
-document.getElementById('leaderboardBtn').addEventListener('click', () => {
+if (document.getElementById('runButton')) document.getElementById('runButton').addEventListener('click', runCode);
+if (document.getElementById('leaderboardBtn')) document.getElementById('leaderboardBtn').addEventListener('click', () => {
     window.location.href = '../../../Quiz-project/leaderboard.html?world=2&level=9';
 });
