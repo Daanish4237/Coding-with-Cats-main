@@ -169,8 +169,8 @@
     <!-- ── Phaser mounts here ── -->
     <div id="game-container"></div>
 
-    <!-- Background music (also used by Phaser scene via this.sound) -->
-    <audio id="bg-music" loop src="assets/audio/bg_music.ogg"></audio>
+    <!-- Background music — src set dynamically to avoid 416 on empty placeholder -->
+    <audio id="bg-music" loop></audio>
 
     <!-- Task 13.1: Score reveal overlay (triggered by level pages via postMessage or direct call) -->
     <div id="score-reveal-overlay">
@@ -236,8 +236,16 @@
             if (musicStarted) return;
             musicStarted = true;
             applyMuteState();
-            bgMusic.play().catch(() => {});
+            // Only attempt play if the audio element has a src (real file, not placeholder)
+            if (bgMusic.src && bgMusic.src !== window.location.href) {
+                bgMusic.play().catch(() => {});
+            }
         }
+
+        // Set src only after confirming the file exists (avoids 416 on empty placeholders)
+        fetch('assets/audio/bg_music.ogg', { method: 'HEAD' })
+            .then(r => { if (r.ok) bgMusic.src = 'assets/audio/bg_music.ogg'; })
+            .catch(() => {});
 
         applyMuteState();
         document.addEventListener('click',   startMusic, { once: true });
