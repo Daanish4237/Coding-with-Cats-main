@@ -1,5 +1,6 @@
 // Level 5: BOSS FIGHT - Code Cat Battle!
 import * as initialization from '../../initialization.js';
+import { createGameTheme } from '../../blockly-theme.js';
 
 // Level configuration
 const CURRENT_LEVEL = 5;

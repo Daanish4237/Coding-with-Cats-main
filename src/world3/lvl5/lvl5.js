@@ -1,5 +1,6 @@
 // Level 15: ULTIMATE BOSS FIGHT — The Final Challenge!
 import * as initialization from '../../initialization.js';
+import { createGameTheme } from '../../blockly-theme.js';
 
 // Level configuration
 const CURRENT_LEVEL = 15;

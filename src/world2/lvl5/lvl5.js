@@ -1,5 +1,6 @@
 // Level 10: BOSS FIGHT - Logic Master Battle!
 import * as initialization from '../../initialization.js';
+import { createGameTheme } from '../../blockly-theme.js';
 
 // Level configuration
 const CURRENT_LEVEL = 10;
