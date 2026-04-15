@@ -303,8 +303,14 @@ export class MainHub extends Phaser.Scene {
                 this._logoutBtn.setVisible(true);
                 this._authText.setText(`🐱 ${data.username}`);
 
-                // Check boss level prerequisites
-                await this._checkBossLocks(data.student_id);
+                // Admins can access all levels — skip lock check
+                if (data.role === 'Admin') {
+                    this._unlockBoss(10);
+                    this._unlockBoss(15);
+                } else {
+                    // Check boss level prerequisites for regular users
+                    await this._checkBossLocks(data.student_id);
+                }
             } else {
                 // Show login / register
                 this._loginBtn.setVisible(true);
