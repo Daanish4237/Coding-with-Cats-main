@@ -305,6 +305,8 @@ export class MainHub extends Phaser.Scene {
 
                 // Admins can access all levels — skip lock check
                 if (data.role === 'Admin') {
+                    console.log('Admin detected — unlocking all boss levels');
+                    this._unlockBoss(5);
                     this._unlockBoss(10);
                     this._unlockBoss(15);
                 } else {
